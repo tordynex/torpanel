@@ -1,18 +1,17 @@
-# Använd en minimal Python-bild
 FROM python:3.11-slim
 
-# Sätt arbetskatalog
+# Ange arbetskatalogen till din backend
 WORKDIR /app
 
-# Kopiera beroenden och installera
-COPY requirements.txt .
+# Kopiera bara requirements först och installera
+COPY backend/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Kopiera all kod
-COPY . .
+# Kopiera all kod från backend-mappen in i containern
+COPY backend/ .
 
-# Exponera porten vi kör på (Render behöver denna)
+# Exponera porten du använder
 EXPOSE 10000
 
-# Starta FastAPI med Uvicorn
+# Kör init_db.py och sen starta servern
 CMD ["sh", "-c", "python init_db.py && uvicorn main:app --host 0.0.0.0 --port 10000"]
