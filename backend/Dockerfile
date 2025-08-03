@@ -14,5 +14,8 @@ COPY . .
 # Exponera porten vi kör på (Render behöver denna)
 EXPOSE 10000
 
+# Kör tabellskapa-script
+RUN python init_db.py
+
 # Starta FastAPI med Uvicorn
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "10000"]
