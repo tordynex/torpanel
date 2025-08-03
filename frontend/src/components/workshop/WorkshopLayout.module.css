@@ -1,0 +1,92 @@
+.container {
+  display: flex;
+  height: 100vh;
+  background-color: #ffffff;
+  font-family: sans-serif;
+}
+
+.sidebar {
+  width: 220px;
+  background-color: #1f2937; /* dark gray */
+  color: white;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 0;
+}
+
+.logoWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50px;
+  margin-bottom: 2rem;
+}
+
+.logo {
+  max-width: 180px;
+  height: auto;
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding-left: 1.5rem;
+}
+
+.navLink {
+  color: white;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+}
+
+.active {
+  color: #ef5027; /* orange highlight */
+}
+
+.main {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  background-color: #f9fafb;
+  padding: 1rem 2rem;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 3rem;
+}
+
+.headerTitle {
+  font-weight: bold;
+  font-size: 1.1rem;
+  color: #222;
+}
+
+.content {
+  padding: 2rem;
+  overflow-y: auto;
+  flex-grow: 1;
+}
+
+.logoutBtn {
+  background-color: transparent;
+  border: 1px solid #ef5027;
+  color: #ef5027;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.logoutBtn:hover {
+  background-color: #ef5027;
+  color: white;
+}

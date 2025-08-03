@@ -1,0 +1,46 @@
+BACKEND/
+    / app
+        - models.py
+
+
+FRONTEND/
+    / Public
+        - autonexo_logo.png
+        - vite.svg
+    / SRC
+        / services
+            - userService.ts
+            - carService.ts
+            - customerService.ts
+            - workshopService.ts
+            - servicelogService.ts
+        / components
+            / owner
+                - OwnerLayout.tsx
+                - OwnerLayout.module.css
+                / user
+                    - UserForm.tsx
+                    - UserForm.module.css
+                    - UserView.tsx
+                    - Userview.module.css
+            / login
+            / workshop
+        / pages
+            / Owner
+                - Dashboard.tsx
+                - Users.tsx
+        / routes
+            - owner.routes.tsx
+        / types
+            - user.ts
+        / assets
+
+
+
+
+
+
+
+
+Models.py
+Here you find different database fields models including their respective branches. (Workshop, Car, Customer, ServiceLog, User)

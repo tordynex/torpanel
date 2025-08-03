@@ -1,0 +1,16 @@
+@import "../user/UserView.module.css";
+
+.city {
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+.role {
+  font-size: 0.8rem;
+  background-color: #f3f4f6;
+  color: #1f2937;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  display: inline-block;
+  margin-top: 0.25rem;
+}

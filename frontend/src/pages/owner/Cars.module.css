@@ -1,0 +1,170 @@
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+}
+
+.title {
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #111827;
+}
+
+.searchBox {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.searchBox input {
+  flex: 1;
+  padding: 0.6rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+.searchBox button {
+  padding: 0.6rem 1.2rem;
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.searchBox button:disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+}
+
+.searchBox button:hover:not(:disabled) {
+  background-color: #1e40af;
+}
+
+.error {
+  color: #dc2626;
+  margin-bottom: 1rem;
+}
+
+.result {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+}
+
+.result label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.result input {
+  width: 100%;
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.buttonRow {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.buttonRow button {
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.buttonRow button:first-child {
+  background-color: #ef5027;
+  color: white;
+}
+
+.buttonRow button:first-child:hover {
+  background-color: #E83105;
+}
+
+.buttonRow button:last-child {
+  background-color: #e5e7eb;
+}
+
+.buttonRow button:last-child:hover {
+  background-color: #d1d5db;
+}
+
+.confirmBox {
+  margin-top: 1rem;
+  background: #fff7ed;
+  padding: 1rem;
+  border: 1px solid #fcd34d;
+  border-radius: 8px;
+}
+
+.confirmBox p {
+  margin-bottom: 0.5rem;
+  color: #92400e;
+}
+
+.deleteBtn {
+  background-color: #ef4444;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-right: 0.75rem;
+}
+
+.deleteBtn:hover {
+  background-color: #dc2626;
+}
+
+.serviceLogs {
+  margin-top: 2rem;
+}
+
+.serviceCard {
+  background-color: #f3f4f6;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  border: 1px solid #e5e7eb;
+}
+
+.taskList {
+  margin-top: 0.5rem;
+  padding-left: 1.25rem;
+}
+
+.taskList li {
+  margin-bottom: 0.3rem;
+}
+
+.verifiedBox {
+  margin-top: 1rem;
+}
+
+.verifiedBy {
+  display: flex;
+  align-items: center;
+  color: #10b981;
+  font-weight: 500;
+  gap: 0.5rem;
+}
