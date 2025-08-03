@@ -1,8 +1,12 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.routes import users, cars, customers, workshops, servicelogs
+from app import models
+from app.database import Base, engine
 
 app = FastAPI()
+
+Base.metadata.create_all(bind=engine)
 
 # Inkludera routes
 app.include_router(users.router, prefix="/users", tags=["Användare / Users"])
