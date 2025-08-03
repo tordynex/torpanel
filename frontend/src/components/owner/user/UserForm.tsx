@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import styles from "./Userform.module.css";
+import styles from "./UserForm.module.css";
 import type { User, UserCreate } from "@/types/user";
 import {
   createUser,
