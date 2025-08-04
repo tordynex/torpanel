@@ -130,6 +130,7 @@ class CarBase(BaseModel):
     model_year: int
 
 class CarCreate(CarBase):
+    pass    
 
 class CarRead(CarBase):
     id: int
