@@ -96,9 +96,9 @@ class Car(Base):
     model_year = Column(Integer, nullable=False)
 
     # relation till kund
-    customer_id = Column(Integer, ForeignKey("customers.id", ondelete="SET NULL"))
-    owner = relationship("Customer", back_populates="cars")
-
+    customer_id = Column(Integer, ForeignKey("customers.id"), nullable=True)
+    customer = relationship("Customer", back_populates="cars", lazy="joined", foreign_keys=[customer_id])
+    
     # relation till serviceloggar
     service_logs = relationship("ServiceLog", back_populates="car", cascade="all, delete-orphan")
 
