@@ -8,7 +8,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://www.portal.autonexo.se"], 
+    allow_origins=["https://www.portal.autonexo.se", "https://www.autonexo.se"], 
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
