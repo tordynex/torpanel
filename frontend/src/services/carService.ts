@@ -9,8 +9,6 @@ export interface Car {
   registration_number: string
   brand: string
   model_year: number
-  customer_id?: number
-  customer?: CarOwner
   service_logs: ServiceLog[]
 }
 
@@ -18,7 +16,6 @@ export interface CarCreate {
   registration_number: string
   brand: string
   model_year: number
-  customer_id: number
 }
 
 export const createCar = async (data: CarCreate): Promise<Car> => {
