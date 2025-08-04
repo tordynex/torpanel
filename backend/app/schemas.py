@@ -135,7 +135,7 @@ class CarCreate(CarBase):
 
 class CarRead(CarBase):
     id: int
-    owner: Optional[CustomerRead]
+    customer: Optional[CustomerRead]
     service_logs: List['ServiceLogRead'] = []
 
     class Config:
