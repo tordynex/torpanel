@@ -10,7 +10,7 @@ Base.metadata.create_all(bind=engine)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], 
+    allow_origins=["https://www.portal.autonexo.se"], 
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
