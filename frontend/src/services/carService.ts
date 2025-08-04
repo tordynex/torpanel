@@ -4,22 +4,13 @@ import type { ServiceLog } from "./servicelogService"
 const API_BASE = "https://autonexo-backend.onrender.com"
 const CAR_ENDPOINT = `${API_BASE}/cars`
 
-export interface CarOwner {
-  id: number
-  first_name: string
-  last_name: string
-  email: string
-  phone: string
-  last_workshop_visited: string | null
-}
-
 export interface Car {
   id: number
   registration_number: string
   brand: string
   model_year: number
   customer_id?: number
-  owner?: CarOwner
+  customer?: CarOwner
   service_logs: ServiceLog[]
 }
 
