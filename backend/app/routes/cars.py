@@ -10,6 +10,7 @@ router = APIRouter()
 
 @router.post("/create", response_model=schemas.CarRead)
 def create_car(car: schemas.CarCreate, db: Session = Depends(get_db)):
+    print("RECEIVED DATA:", car)  
     existing = db.query(models.Car).filter(models.Car.registration_number == car.registration_number).first()
     if existing:
         raise HTTPException(status_code=400, detail="Bil med detta registreringsnummer finns redan")
