@@ -130,12 +130,9 @@ class CarBase(BaseModel):
     model_year: int
 
 class CarCreate(CarBase):
-    customer_id: Optional[int] = None
-
 
 class CarRead(CarBase):
     id: int
-    customer: Optional[CustomerRead]
     service_logs: List['ServiceLogRead'] = []
 
     class Config:
