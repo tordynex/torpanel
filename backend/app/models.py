@@ -84,7 +84,7 @@ class Customer(Base):
     phone = Column(String, nullable=True)
     last_workshop_visited = Column(String, nullable=True)  # Kan ersättas med ForeignKey om du vill koppla till Workshop
 
-    cars = relationship("Car", back_populates="owner")
+    cars = relationship("Car", back_populates="customer")
 
 
 class Car(Base):
