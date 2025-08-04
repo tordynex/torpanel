@@ -17,7 +17,7 @@ app.include_router(servicelogs.router, prefix="/servicelogs", tags=["Service Log
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://autonexo-frontend.onrender.com", "https://www.portal.autonexo.se", "https://www.autonexo.se"], 
+    allow_origins=["*"], 
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
