@@ -6,15 +6,13 @@ import styles from "./CreateCarForm.module.css"
 interface Props {
   onCreated: (car: Car) => void
   onCancel: () => void
-  customerId: number
 }
 
-export default function CreateCarForm({ onCreated, onCancel, customerId }: Props) {
+export default function CreateCarForm({ onCreated, onCancel }: Props) {
   const [formData, setFormData] = useState<CarCreate>({
     registration_number: "",
     brand: "",
     model_year: new Date().getFullYear(),
-    customer_id: customerId,
   })
 
   const [error, setError] = useState("")
