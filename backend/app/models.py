@@ -84,8 +84,6 @@ class Customer(Base):
     phone = Column(String, nullable=True)
     last_workshop_visited = Column(String, nullable=True)  # Kan ersättas med ForeignKey om du vill koppla till Workshop
 
-    cars = relationship("Car", back_populates="customer")
-
 
 class Car(Base):
     __tablename__ = "cars"
@@ -96,8 +94,7 @@ class Car(Base):
     model_year = Column(Integer, nullable=False)
 
     # relation till kund
-    customer_id = Column(Integer, ForeignKey("customers.id"), nullable=True)
-    customer = relationship("Customer", back_populates="cars", lazy="joined", foreign_keys=[customer_id])
+    customer_id = Column(Integer, nullable=True)
     
     # relation till serviceloggar
     service_logs = relationship("ServiceLog", back_populates="car", cascade="all, delete-orphan")
