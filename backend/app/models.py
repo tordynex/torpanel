@@ -43,6 +43,7 @@ class Workshop(Base):
     # Företagsinfo
     org_number = Column(String, nullable=True)
     active = Column(Boolean, default=True)
+    autonexo = Column(Boolean, default=True)
     opening_hours = Column(String, nullable=True)
     notes = Column(String, nullable=True)
 
@@ -74,6 +75,7 @@ class User(Base):
         passive_deletes=True,
     )
 
+
 class Customer(Base):
     __tablename__ = "customers"
 
@@ -83,8 +85,6 @@ class Customer(Base):
     email = Column(String, unique=True, nullable=False)
     phone = Column(String, nullable=True)
     last_workshop_visited = Column(String, nullable=True)  # Kan ersättas med ForeignKey om du vill koppla till Workshop
-
-    cars = relationship("Car", back_populates="owner")
 
 
 class Car(Base):
@@ -96,8 +96,7 @@ class Car(Base):
     model_year = Column(Integer, nullable=False)
 
     # relation till kund
-    customer_id = Column(Integer, ForeignKey("customers.id", ondelete="SET NULL"))
-    owner = relationship("Customer", back_populates="cars")
+    customer_id = Column(Integer, nullable=True)
 
     # relation till serviceloggar
     service_logs = relationship("ServiceLog", back_populates="car", cascade="all, delete-orphan")
@@ -119,6 +118,7 @@ class ServiceLog(Base):
     tasks = relationship("ServiceTask", back_populates="service_log", cascade="all, delete-orphan")
 
     workshop = relationship("Workshop", back_populates="service_logs")
+
 
 class ServiceTask(Base):
     __tablename__ = "servicetasks"

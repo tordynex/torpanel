@@ -1,11 +1,16 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+import os
+from typing import List
+
+from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
+from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired, serializer
+
 from app import models, schemas
 from app.database import get_db
-from typing import List
 from app.auth import verify_password, create_access_token, get_current_user
 from passlib.context import CryptContext
+from app.services.email_service import send_welcome_email, send_password_reset_email
 
 
 router = APIRouter()
@@ -14,12 +19,25 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 def hash_password(password: str):
     return pwd_context.hash(password)
 
+SECRET_KEY = os.getenv("SECRET_KEY", "change-me")
+RESET_SALT = "password-reset"
+RESET_TOKEN_MAX_AGE = int(os.getenv("RESET_TOKEN_MAX_AGE", "3600"))
+RESET_URL_BASE = os.getenv("RESET_URL_BASE", "http://localhost:5173/reset-password")
+
+ts = URLSafeTimedSerializer(SECRET_KEY)
+
+def make_reset_token(user_id: int) -> str:
+    return ts.dumps({"uid": user_id}, salt=RESET_SALT)
+
+def verify_reset_token(token: str) -> int:
+    data = ts.loads(token, salt=RESET_SALT, max_age=RESET_TOKEN_MAX_AGE)
+    return int(data["uid"])
 
 # ----------------------------------
 #  Skapa användare / Create user
 # ----------------------------------
 @router.post("/create", response_model=schemas.UserRead)
-def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
+def create_user(background_tasks: BackgroundTasks, user: schemas.UserCreate, db: Session = Depends(get_db)):
     db_user = db.query(models.User).filter(models.User.email == user.email).first()
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
@@ -40,6 +58,9 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
+
+    background_tasks.add_task(send_welcome_email, user.email, user.username)
+
     return new_user
 
 # ----------------------------------
@@ -113,3 +134,55 @@ def login(
 @router.get("/me", response_model=schemas.UserRead)
 def get_profile(current_user: models.User = Depends(get_current_user)):
     return current_user
+
+# --- 1) Begär återställningslänk ---
+@router.post("/reset-password-request")
+def reset_password_request(
+    payload: dict,
+    db: Session = Depends(get_db),
+    background_tasks: BackgroundTasks = None,
+):
+    email = (payload.get("email") or "").strip().lower()
+
+    # Svara alltid 200 – läck inte om mail finns
+    user = db.query(models.User).filter(models.User.email == email).first()
+    if user:
+        token = make_reset_token(user.id)
+        reset_link = f"{RESET_URL_BASE}?token={token}"
+
+        if background_tasks is not None:
+            background_tasks.add_task(
+                send_password_reset_email, user.email, user.username, reset_link
+            )
+        else:
+            # fallback om ingen BackgroundTasks injiceras (bör inte hända i FastAPI)
+            import asyncio
+            asyncio.create_task(send_password_reset_email(user.email, user.username, reset_link))
+
+    return {"message": "Om kontot finns har vi skickat ett mail med instruktioner."}
+
+# --- 2) Sätt nytt lösenord ---
+@router.post("/reset-password")
+def reset_password(payload: dict, db: Session = Depends(get_db)):
+    token = payload.get("token") or ""
+    new_password = payload.get("new_password") or ""
+
+    if len(new_password) < 8:
+        raise HTTPException(status_code=400, detail="Lösenordet måste vara minst 8 tecken.")
+
+    try:
+        user_id = verify_reset_token(token)
+    except SignatureExpired:
+        raise HTTPException(status_code=400, detail="Länken har gått ut.")
+    except BadSignature:
+        raise HTTPException(status_code=400, detail="Ogiltig länk.")
+
+    user = db.get(models.User, user_id)  # SQLAlchemy 1.4+ sätt
+    if not user:
+        raise HTTPException(status_code=404, detail="Användare saknas.")
+
+    user.hashed_password = hash_password(new_password)
+    db.add(user)
+    db.commit()
+
+    return {"message": "Lösenord uppdaterat."}

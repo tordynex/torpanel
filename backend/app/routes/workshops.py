@@ -29,6 +29,7 @@ def create_workshop(workshop: schemas.WorkshopCreate, db: Session = Depends(get_
         longitude=workshop.longitude,
         org_number=workshop.org_number,
         active=workshop.active if workshop.active is not None else True,
+        autonexo=workshop.autonexo,
         opening_hours=workshop.opening_hours,
         notes=workshop.notes
     )
@@ -67,6 +68,7 @@ def update_workshop(workshop_id: int, data: schemas.WorkshopCreate, db: Session 
     workshop.longitude = data.longitude
     workshop.org_number = data.org_number
     workshop.active = data.active if data.active is not None else True
+    workshop.autonexo = data.autonexo
     workshop.opening_hours = data.opening_hours
     workshop.notes = data.notes
 

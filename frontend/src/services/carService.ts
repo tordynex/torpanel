@@ -4,22 +4,11 @@ import type { ServiceLog } from "./servicelogService"
 const API_BASE = "http://localhost:8000"
 const CAR_ENDPOINT = `${API_BASE}/cars`
 
-export interface CarOwner {
-  id: number
-  first_name: string
-  last_name: string
-  email: string
-  phone: string
-  last_workshop_visited: string | null
-}
-
 export interface Car {
   id: number
   registration_number: string
   brand: string
   model_year: number
-  customer_id?: number
-  owner?: CarOwner
   service_logs: ServiceLog[]
 }
 
@@ -27,7 +16,6 @@ export interface CarCreate {
   registration_number: string
   brand: string
   model_year: number
-  customer_id: number
 }
 
 export const createCar = async (data: CarCreate): Promise<Car> => {

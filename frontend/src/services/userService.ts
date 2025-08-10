@@ -81,6 +81,18 @@ export const logout = () => {
   localStorage.removeItem("token")
 }
 
+// 🆕 Glömt lösenord – begär återställningslänk
+export const requestPasswordReset = async (email: string): Promise<void> => {
+  await axios.post(`${USER_ENDPOINT}/reset-password-request`, { email })
+}
+
+export const resetPassword = async (token: string, newPassword: string): Promise<void> => {
+  await axios.post(`${USER_ENDPOINT}/reset-password`, {
+    token,
+    new_password: newPassword,
+  })
+}
+
 export default {
   fetchUsers,
   createUser,
@@ -89,4 +101,6 @@ export default {
   login,
   logout,
   fetchCurrentUser,
+  requestPasswordReset,
+  resetPassword,
 }

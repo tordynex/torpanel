@@ -24,6 +24,7 @@ export interface Workshop {
   longitude?: number
   org_number?: string
   active: boolean
+  autonexo: boolean
   opening_hours?: string
   notes?: string
   users: UserShort[]
@@ -42,6 +43,7 @@ export interface WorkshopCreate {
   longitude?: number
   org_number?: string
   active?: boolean
+  autonexo?: boolean
   opening_hours?: string
   notes?: string
   user_ids?: number[]

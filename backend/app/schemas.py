@@ -76,6 +76,7 @@ class WorkshopBase(BaseModel):
 
     org_number: Optional[str] = None
     active: Optional[bool] = True
+    autonexo: Optional[bool] = True
     opening_hours: Optional[str] = None
     notes: Optional[str] = None
 
@@ -130,12 +131,10 @@ class CarBase(BaseModel):
     model_year: int
 
 class CarCreate(CarBase):
-    customer_id: Optional[int] = None
-
+    pass
 
 class CarRead(CarBase):
     id: int
-    owner: Optional[CustomerRead]
     service_logs: List['ServiceLogRead'] = []
 
     class Config:

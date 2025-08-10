@@ -1,27 +1,33 @@
+// src/pages/workshop/WorkshopLayout.tsx
 import { Outlet, Navigate, Link, useLocation, useNavigate } from "react-router-dom";
-import { useAuth } from "@/hooks/useAuth"
+import { useAuth } from "@/hooks/useAuth";
 import styles from "./WorkshopLayout.module.css";
-import { FaUsers, FaTachometerAlt } from "react-icons/fa";
-import { FaBook } from "react-icons/fa";
+import { FaUsers, FaTachometerAlt, FaBook } from "react-icons/fa";
 import { BsWrenchAdjustableCircle } from "react-icons/bs";
-import userService from "@/services/userService"
+import userService from "@/services/userService";
 
-export default function OwnerLayout() {
+export default function WorkshopLayout() {
   const location = useLocation();
-  const auth = useAuth()
+  const auth = useAuth(); // null = ingen/fel/expired token
+  const navigate = useNavigate();
 
+  // Skydda alla /workshop/* här:
   if (!auth || auth.role !== "workshop_user") {
-    return <Navigate to="/login" state={{ from: location }} replace />
+    return <Navigate to="/login" replace state={{ from: location.pathname + location.search }} />;
   }
 
   const isActive = (path: string) => location.pathname === path;
 
-  const navigate = useNavigate()
-
   const handleLogout = () => {
-    userService.logout()
-    navigate("/login")
-  }
+    try {
+      userService.logout?.(); // om den finns
+    } finally {
+      localStorage.removeItem("token");
+      localStorage.removeItem("currentUser");
+      localStorage.removeItem("currentWorkshop");
+      navigate("/login", { replace: true });
+    }
+  };
 
   return (
     <div className={styles.container}>
@@ -31,22 +37,13 @@ export default function OwnerLayout() {
           <img src="/autonexo_logo.png" alt="Autonexo logo" className={styles.logo} />
         </div>
         <nav className={styles.nav}>
-          <Link
-            to="/workshop/"
-            className={`${styles.navLink} ${isActive("/workshop/") ? styles.active : ""}`}
-          >
+          <Link to="/workshop/" className={`${styles.navLink} ${isActive("/workshop/") ? styles.active : ""}`}>
             <FaTachometerAlt /> Översikt
           </Link>
-          <Link
-            to="/workshop/servicelog"
-            className={`${styles.navLink} ${isActive("/workshop/servicelog") ? styles.active : ""}`}
-          >
+          <Link to="/workshop/servicelog" className={`${styles.navLink} ${isActive("/workshop/servicelog") ? styles.active : ""}`}>
             <BsWrenchAdjustableCircle /> ServiceLog
           </Link>
-          <Link
-            to="/workshop/car-database"
-            className={`${styles.navLink} ${isActive("/workshop/car-database") ? styles.active : ""}`}
-          >
+          <Link to="/workshop/car-database" className={`${styles.navLink} ${isActive("/workshop/car-database") ? styles.active : ""}`}>
             <FaBook /> Bildatabas
           </Link>
         </nav>
@@ -56,9 +53,7 @@ export default function OwnerLayout() {
       <div className={styles.main}>
         <header className={styles.header}>
           <div className={styles.headerTitle}>Autonexo Partnerpanel</div>
-          <button onClick={handleLogout} className={styles.logoutBtn}>
-            Logga ut
-          </button>
+          <button onClick={handleLogout} className={styles.logoutBtn}>Logga ut</button>
         </header>
         <main className={styles.content}>
           <Outlet />

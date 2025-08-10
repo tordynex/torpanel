@@ -18,7 +18,6 @@ def create_car(car: schemas.CarCreate, db: Session = Depends(get_db)):
         registration_number=car.registration_number,
         brand=car.brand,
         model_year=car.model_year,
-        customer_id=car.customer_id
     )
     db.add(new_car)
     db.commit()
@@ -52,7 +51,6 @@ def update_car(car_id: int, data: schemas.CarCreate, db: Session = Depends(get_d
     car.registration_number = data.registration_number
     car.brand = data.brand
     car.model_year = data.model_year
-    car.customer_id = data.customer_id
 
     db.commit()
     db.refresh(car)

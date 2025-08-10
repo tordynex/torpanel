@@ -2,19 +2,18 @@ import { useState } from "react"
 import carService from "@/services/carService"
 import type { CarCreate, Car } from "@/services/carService"
 import styles from "./CreateCarForm.module.css"
+import allMakes from "@/utils/cars"
 
 interface Props {
   onCreated: (car: Car) => void
   onCancel: () => void
-  customerId: number
 }
 
-export default function CreateCarForm({ onCreated, onCancel, customerId }: Props) {
+export default function CreateCarForm({ onCreated, onCancel }: Props) {
   const [formData, setFormData] = useState<CarCreate>({
     registration_number: "",
     brand: "",
     model_year: new Date().getFullYear(),
-    customer_id: customerId,
   })
 
   const [error, setError] = useState("")
@@ -61,13 +60,24 @@ export default function CreateCarForm({ onCreated, onCancel, customerId }: Props
 
       <label>
         Märke
-        <input
+        <select
           name="brand"
-          type="text"
           required
           value={formData.brand}
-          onChange={handleChange}
-        />
+          onChange={(e) =>
+            setFormData((prev) => ({
+              ...prev,
+              brand: e.target.value,
+            }))
+          }
+        >
+          <option value="" disabled>Välj bilmärke</option>
+          {allMakes.map((make) => (
+            <option key={make} value={make}>
+              {make}
+            </option>
+          ))}
+        </select>
       </label>
 
       <label>

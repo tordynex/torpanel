@@ -37,6 +37,7 @@ export default function WorkshopForm({
     longitude: undefined,
     org_number: "",
     active: true,
+    autonexo: true,
     opening_hours: "",
     notes: "",
     user_ids: [],
@@ -72,6 +73,7 @@ export default function WorkshopForm({
       longitude: workshop.longitude,
       org_number: workshop.org_number || "",
       active: workshop.active,
+      autonexo: workshop.autonexo,
       opening_hours: workshop.opening_hours || "",
       notes: workshop.notes || "",
       user_ids: workshop.users.map((u) => u.id),
@@ -190,6 +192,15 @@ export default function WorkshopForm({
             type="checkbox"
             checked={formData.active}
             onChange={(e) => setFormData((prev) => ({ ...prev, active: e.target.checked }))}
+          />
+        </label>
+        <label>
+          Autonexo Auktoriserad
+          <input
+            name="autonexo"
+            type="checkbox"
+            checked={formData.autonexo}
+            onChange={(e) => setFormData((prev) => ({ ...prev, autonexo: e.target.checked }))}
           />
         </label>
         <label>

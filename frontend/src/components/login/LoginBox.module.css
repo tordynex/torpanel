@@ -64,3 +64,13 @@ input {
   max-height: 60px;
   width: auto;
 }
+
+/* LoginBox.module.css */
+.metaRow { margin-top: 8px; text-align: right; }
+.linkBtn {
+  background: none; border: 0; padding: 0;
+  font: inherit; color: #0b5fff; cursor: pointer; text-decoration: underline;
+}
+.info { color: #2e7d32; font-size: 0.9rem; margin-top: 6px; }
+
+.form h3 { margin: 0 0 8px 0; }

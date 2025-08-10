@@ -15,7 +15,6 @@ export default function LoginPage() {
   return (
     <LoginBox
       onSuccess={(token) => {
-          console.log("Inloggad med token:", token)
 
           // Spara token
           localStorage.setItem("token", token)
