@@ -1,7 +1,7 @@
 import axios from "axios"
 import type { ServiceLog } from "./servicelogService"
 
-const API_BASE = "http://localhost:8000"
+const API_BASE = "https://autonexo-backend.onrender.com/"
 const CAR_ENDPOINT = `${API_BASE}/cars`
 
 export interface Car {
