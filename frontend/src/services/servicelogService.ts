@@ -1,6 +1,6 @@
 import axios from "@/utils/axios"
 
-const API_BASE = "http://localhost:8000"
+const API_BASE = "https://autonexo-backend.onrender.com"
 const SERVICELOG_ENDPOINT = `${API_BASE}/servicelogs`
 
 export interface ServiceTask {
