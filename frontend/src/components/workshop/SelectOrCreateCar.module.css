@@ -2,9 +2,9 @@
   max-width: 500px;
   margin: 0 auto;
   padding: 2rem;
-  background-color: #f9fafb;
+  background-color: transparent;
   border-radius: 8px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+
 }
 
 .title {
@@ -29,6 +29,7 @@
   border: 1px solid #d1d5db;
   border-radius: 6px;
   margin-bottom: 1rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
 }
 
 .selectBtn {

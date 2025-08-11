@@ -1,101 +1,140 @@
-import { useEffect, useState } from "react"
-import { MdAddCircleOutline } from "react-icons/md"
-import type { Car } from "@/services/carService"
-import carService from "@/services/carService"
-import CreateCarForm from "./CreateCarForm"
+import { useEffect, useState } from "react";
+import { MdAddCircleOutline } from "react-icons/md";
 import { GoArrowDownLeft } from "react-icons/go";
-
+import type { Car } from "@/services/carService";
+import carService from "@/services/carService";
+import CreateCarForm from "./CreateCarForm";
+import styles from "./SelectOrCreateCar.module.css";
 
 interface Props {
-  onCarSelected: (car: Car) => void
+  onCarSelected: (car: Car) => void;
 }
 
 export default function SelectOrCreateCar({ onCarSelected }: Props) {
-  const [query, setQuery] = useState("")
-  const [matches, setMatches] = useState<Car[]>([])
-  const [showCreateForm, setShowCreateForm] = useState(false)
+  const [query, setQuery] = useState("");
+  const [matches, setMatches] = useState<Car[]>([]);
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const customerId = 1 // Anpassa efter inloggad verkstad/användare om det behövs
+  const customerId = 1; // TODO: hämta från inloggad användare/verkstad
 
   useEffect(() => {
-    if (query.length < 2) {
-      setMatches([])
-      return
-    }
+    let cancelled = false;
 
-    const fetch = async () => {
-      try {
-        const all = await carService.fetchAllCars()
-        const filtered = all.filter((car) =>
-          car.registration_number.toLowerCase().includes(query.toLowerCase())
-        )
-        setMatches(filtered)
-      } catch (err) {
-        console.error("Kunde inte hämta bilar", err)
+    const run = async () => {
+      if (query.trim().length < 2) {
+        setMatches([]);
+        return;
       }
-    }
+      setLoading(true);
+      try {
+        const all = await carService.fetchAllCars();
+        if (cancelled) return;
+        const q = query.toLowerCase();
+        const filtered = all.filter((car) =>
+          car.registration_number.toLowerCase().includes(q)
+        );
+        setMatches(filtered);
+      } catch (err) {
+        console.error("Kunde inte hämta bilar", err);
+        if (!cancelled) setMatches([]);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
 
-    fetch()
-  }, [query])
+    run();
+    return () => {
+      cancelled = true;
+    };
+  }, [query]);
 
-  return (
-    <div>
-      {!showCreateForm ? (
-        <>
-          <label>
-            Sök bil (regnummer):
-            <input
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="t.ex. ABC123"
-              style={{ display: "block", margin: "0.5rem 0" }}
-            />
-          </label>
-
-          {matches.length > 0 ? (
-            <ul style={{ listStyle: "none", padding: 0 }}>
-              {matches.map((car) => (
-                <li key={car.id}>
-                  <button onClick={() => onCarSelected(car)}>
-                    {car.registration_number} – {car.brand} ({car.model_year}) <GoArrowDownLeft />
-                  </button>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <>
-              <p>Ingen bil hittades med det registreringsnumret.</p>
-              <button
-                onClick={() => setShowCreateForm(true)}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "0.4rem",
-                  backgroundColor: "#ef5027",
-                  color: "white",
-                  padding: "0.5rem 1rem",
-                  border: "none",
-                  borderRadius: "5px",
-                  cursor: "pointer",
-                }}
-              >
-                <MdAddCircleOutline size={20} />
-                Lägg till bil
-              </button>
-            </>
-          )}
-        </>
-      ) : (
+  if (showCreateForm) {
+    return (
+      <div className={styles.wrapper}>
+        <div className={styles.title}>Lägg till ny bil</div>
         <CreateCarForm
           customerId={customerId}
           onCreated={(car) => {
-            onCarSelected(car)
-            setShowCreateForm(false)
+            onCarSelected(car);
+            setShowCreateForm(false);
           }}
           onCancel={() => setShowCreateForm(false)}
         />
+      </div>
+    );
+  }
+
+  return (
+    <div className={styles.wrapper}>
+      <div className={styles.title}>Sök bil (registreringsnummer)</div>
+
+      <input
+        className={styles.input}
+        type="text"
+        value={query}
+        onChange={(e) => setQuery(e.target.value.toUpperCase())}
+        placeholder="t.ex. ABC123"
+        aria-label="Sök regnummer"
+      />
+
+      {/* Info / varningstexter */}
+      {query.trim().length < 2 && (
+        <div className={styles.info}>
+          Skriv minst två tecken för att börja söka.
+        </div>
+      )}
+
+      {query.trim().length >= 2 && !loading && matches.length === 0 && (
+        <>
+          <div className={styles.warning}>
+            Ingen bil hittades med det regnumret.
+          </div>
+          <button
+            className={styles.addBtn}
+            onClick={() => setShowCreateForm(true)}
+          >
+            <MdAddCircleOutline size={18} style={{ verticalAlign: "text-bottom" }} />
+            &nbsp;Lägg till bil
+          </button>
+        </>
+      )}
+
+      {/* Resultatlista */}
+      {matches.length > 0 && (
+        <div className={styles.resultBox} role="list">
+          {loading ? (
+            <div className={styles.info}>Laddar…</div>
+          ) : (
+            matches.map((car) => (
+              <div key={car.id} role="listitem" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, padding: "6px 0" }}>
+                <div>
+                  <strong>{car.registration_number}</strong>
+                  {car.brand ? ` – ${car.brand}` : ""}{" "}
+                  {car.model_year ? `(${car.model_year})` : ""}
+                </div>
+                <button
+                  className={styles.selectBtn}
+                  onClick={() => onCarSelected(car)}
+                >
+                  Välj <GoArrowDownLeft />
+                </button>
+              </div>
+            ))
+          )}
+        </div>
+      )}
+
+      {/* Snabbgenväg: skapa bil direkt */}
+      {query.trim().length >= 2 && (
+        <button
+          className={styles.addBtn}
+          onClick={() => setShowCreateForm(true)}
+        >
+          <MdAddCircleOutline size={18} style={{ verticalAlign: "text-bottom" }} />
+          &nbsp;Lägg till bil
+        </button>
       )}
     </div>
-  )
+  );
 }
