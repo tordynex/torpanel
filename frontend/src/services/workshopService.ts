@@ -1,6 +1,6 @@
 import axios from "axios"
 
-const API_BASE = "http://localhost:8000"
+const API_BASE = "https://autonexo-backend.onrender.com"
 const WORKSHOP_ENDPOINT = `${API_BASE}/workshops`
 
 export interface UserShort {
