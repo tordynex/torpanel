@@ -1,10 +1,10 @@
 import { type RouteObject } from "react-router"
 import OwnerLayout from "../components/owner/OwnerLayout"
-import Dashboard from "../pages/Owner/Dashboard"
-import Users from "../pages/Owner/Users"
-import Workshops from "../pages/Owner/Workshops"
-import Cars from "../pages/Owner/Cars"
-import ServiceLogs from "../pages/Owner/ServiceLogs"
+import Dashboard from "../pages/owner/Dashboard"
+import Users from "../pages/owner/Users"
+import Workshops from "../pages/owner/Workshops"
+import Cars from "../pages/owner/Cars"
+import ServiceLogs from "../pages/owner/ServiceLogs"
 
 export const ownerRoutes: RouteObject = {
   path: "/owner",

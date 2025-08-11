@@ -19,10 +19,10 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 def hash_password(password: str):
     return pwd_context.hash(password)
 
-SECRET_KEY = os.getenv("SECRET_KEY", "change-me")
+SECRET_KEY = os.getenv("SECRET_KEY")
 RESET_SALT = "password-reset"
-RESET_TOKEN_MAX_AGE = int(os.getenv("RESET_TOKEN_MAX_AGE", "3600"))
-RESET_URL_BASE = os.getenv("RESET_URL_BASE", "http://localhost:5173/reset-password")
+RESET_TOKEN_MAX_AGE = int(os.getenv("RESET_TOKEN_MAX_AGE"))
+RESET_URL_BASE = os.getenv("RESET_URL_BASE")
 
 ts = URLSafeTimedSerializer(SECRET_KEY)
 
