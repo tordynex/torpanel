@@ -61,7 +61,6 @@ class Workshop(Base):
         "User",
         secondary=user_workshop_association,
         back_populates="workshops",
-        cascade="all, delete",
         passive_deletes=True,
     )
 

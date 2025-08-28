@@ -154,7 +154,7 @@ export interface UserScheduleResponse {
 }
 
 /** Axios-instans med token-injektion */
-const client = axios.create({
+const client = client.create({
   baseURL: USER_ENDPOINT,
 })
 
@@ -182,26 +182,26 @@ client.interceptors.response.use(
 
 /** Users */
 export const fetchUsers = async () => {
-  const { data } = await axios.get(`${USER_ENDPOINT}/all`)
+  const { data } = await client.get(`${USER_ENDPOINT}/all`)
   return data
 }
 
 export const fetchCurrentUser = async () => {
-  const { data } = await axios.get(`${USER_ENDPOINT}/me`)
+  const { data } = await client.get(`${USER_ENDPOINT}/me`)
   return data
 }
 
 export const createUser = async (payload: UserCreate) => {
-  const { data } = await axios.post(`${USER_ENDPOINT}/create`, payload)
+  const { data } = await client.post(`${USER_ENDPOINT}/create`, payload)
   return data
 }
 
 export const deleteUser = async (userId: number) => {
-  await axios.delete(`${USER_ENDPOINT}/delete/${userId}`)
+  await client.delete(`${USER_ENDPOINT}/delete/${userId}`)
 }
 
 export const updateUser = async (userId: number, payload: UserUpdate) => {
-  const { data } = await axios.put(`${USER_ENDPOINT}/edit/${userId}`, payload)
+  const { data } = await client.put(`${USER_ENDPOINT}/edit/${userId}`, payload)
   return data
 }
 
@@ -211,7 +211,7 @@ export const login = async (email: string, password: string): Promise<LoginRespo
   params.append("username", email)
   params.append("password", password)
 
-  const { data } = await axios.post(`${USER_ENDPOINT}/login`, params, {
+  const { data } = await client.post(`${USER_ENDPOINT}/login`, params, {
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
   })
 
@@ -220,7 +220,7 @@ export const login = async (email: string, password: string): Promise<LoginRespo
 
 export const logout = async () => {
   try {
-    await axios.post(`${USER_ENDPOINT}/logout`)
+    await client.post(`${USER_ENDPOINT}/logout`)
   } finally {
     localStorage.removeItem("currentUser")
     localStorage.removeItem("currentWorkshop")
@@ -229,58 +229,58 @@ export const logout = async () => {
 
 /** Lösenordsflöde */
 export const requestPasswordReset = async (email: string) => {
-  await axios.post(`${USER_ENDPOINT}/reset-password-request`, { email })
+  await client.post(`${USER_ENDPOINT}/reset-password-request`, { email })
 }
 
 export const resetPassword = async (token: string, newPassword: string) => {
-  await axios.post(`${USER_ENDPOINT}/reset-password`, { token, new_password: newPassword })
+  await client.post(`${USER_ENDPOINT}/reset-password`, { token, new_password: newPassword })
 }
 
 // --- Nytt: services för arbetstider ---
 export const createWorkingHours = async (userId: number, payload: UserWorkingHoursCreate) => {
-  const { data } = await axios.post(`${USER_ENDPOINT}/users/${userId}/working-hours`, payload)
+  const { data } = await client.post(`${USER_ENDPOINT}/users/${userId}/working-hours`, payload)
   return data
 }
 
 export const listWorkingHours = async (userId: number) => {
-  const { data } = await axios.get(`${USER_ENDPOINT}/users/${userId}/working-hours`)
+  const { data } = await client.get(`${USER_ENDPOINT}/users/${userId}/working-hours`)
   return data
 }
 
 export const updateWorkingHours = async (workingHoursId: number, payload: UserWorkingHoursUpdate) => {
-  const { data } = await axios.patch(`${USER_ENDPOINT}/working-hours/${workingHoursId}`, payload)
+  const { data } = await client.patch(`${USER_ENDPOINT}/working-hours/${workingHoursId}`, payload)
   return data
 }
 
 export const deleteWorkingHours = async (workingHoursId: number) => {
-  await axios.delete(`${USER_ENDPOINT}/working-hours/${workingHoursId}`)
+  await client.delete(`${USER_ENDPOINT}/working-hours/${workingHoursId}`)
 }
 export const setOfficeHours = async (userId: number) => {
-  const { data } = await axios.post(`${USER_ENDPOINT}/users/${userId}/working-hours/preset/office`)
+  const { data } = await client.post(`${USER_ENDPOINT}/users/${userId}/working-hours/preset/office`)
   return data
 }
 
 export const createTimeOff = async (userId: number, payload: UserTimeOffCreate) => {
-  const { data } = await axios.post(`${USER_ENDPOINT}/users/${userId}/time-off`, payload)
+  const { data } = await client.post(`${USER_ENDPOINT}/users/${userId}/time-off`, payload)
   return data
 }
 export const listTimeOff = async (userId: number) => {
-  const { data } = await axios.get(`${USER_ENDPOINT}/users/${userId}/time-off`)
+  const { data } = await client.get(`${USER_ENDPOINT}/users/${userId}/time-off`)
   return data
 }
 export const updateTimeOff = async (timeOffId: number, payload: UserTimeOffUpdate) => {
-  const { data } = await axios.patch(`${USER_ENDPOINT}/time-off/${timeOffId}`, payload)
+  const { data } = await client.patch(`${USER_ENDPOINT}/time-off/${timeOffId}`, payload)
   return data
 }
 export const deleteTimeOff = async (timeOffId: number) => {
-  await axios.delete(`${USER_ENDPOINT}/time-off/${timeOffId}`)
+  await client.delete(`${USER_ENDPOINT}/time-off/${timeOffId}`)
 }
 
 export const setWorkingHoursWithLunch = async (
   userId: number,
   payload: LunchPresetRequest = {}
 ) => {
-  const { data } = await axios.post(
+  const { data } = await client.post(
     `${USER_ENDPOINT}/users/${userId}/working-hours/preset/with-lunch`,
     payload
   )
@@ -292,7 +292,7 @@ export const listUserBookingsWindow = async (
   dateFromISO: string,
   dateToISO: string
 ): Promise<BayBookingRead[]> => {
-  const { data } = await axios.get(`${USER_ENDPOINT}/${userId}/bookings`, {
+  const { data } = await client.get(`${USER_ENDPOINT}/${userId}/bookings`, {
     params: {
       date_from: dateFromISO,
       date_to: dateToISO,
@@ -316,7 +316,7 @@ export const getUserScheduleWindow = async (args: {
   tz?: string        // default "Europe/Stockholm"
 }): Promise<UserScheduleResponse> => {
   const { userId, dayFrom, dayTo, includeBookings = false, tz = "Europe/Stockholm" } = args
-  const { data } = await axios.get(`${USER_ENDPOINT}/${userId}/schedule`, {
+  const { data } = await client.get(`${USER_ENDPOINT}/${userId}/schedule`, {
     params: {
       day_from: dayFrom,
       day_to: dayTo,
