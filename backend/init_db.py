@@ -14,48 +14,56 @@ if "autonexo" not in cols:
         conn.execute(text("ALTER TABLE workshops ADD COLUMN autonexo boolean NOT NULL DEFAULT true;"))
         conn.execute(text("ALTER TABLE workshops ALTER COLUMN autonexo DROP DEFAULT;"))
 
-# ---- FIX FÖR USER ROLE (ENUM + lowercase) ----
-# ---- FIX FÖR USER ROLE (ENUM + lowercase) ----
 print("Normaliserar användarroller + säkerställer ENUM-typ...")
 
 with engine.begin() as conn:
-    # 1) Skapa enum-typen om den saknas
     conn.execute(text("""
     DO $$
+    DECLARE
+      have_type  boolean;
+      has_lower  boolean;
+      has_upper  boolean;
     BEGIN
-      IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'userrole') THEN
+      SELECT EXISTS (SELECT 1 FROM pg_type WHERE typname='userrole') INTO have_type;
+
+      IF have_type THEN
+        SELECT
+          BOOL_OR(enumlabel='owner') AS has_lower,
+          BOOL_OR(enumlabel='OWNER') AS has_upper
+        INTO has_lower, has_upper
+        FROM pg_enum e JOIN pg_type t ON t.oid=e.enumtypid
+        WHERE t.typname='userrole';
+
+        -- Gamla varianten med VERSALER? Migera till gemener.
+        IF has_upper AND NOT has_lower THEN
+          -- ta bort default så vi kan byta typ
+          ALTER TABLE users ALTER COLUMN role DROP DEFAULT;
+          -- gör kolumnen till text
+          ALTER TABLE users ALTER COLUMN role TYPE text USING role::text;
+          -- släng gamla enum
+          DROP TYPE userrole;
+          -- skapa rätt enum
+          CREATE TYPE userrole AS ENUM ('owner','workshop_user','workshop_employee');
+          -- normalisera data
+          UPDATE users SET role = lower(role);
+          -- casta tillbaka till enum
+          ALTER TABLE users ALTER COLUMN role TYPE userrole USING role::userrole;
+          -- sätt default igen
+          ALTER TABLE users ALTER COLUMN role SET DEFAULT 'workshop_user'::userrole;
+        END IF;
+
+      ELSE
+        -- Typen fanns inte: skapa den och försök casta kolumnen om den finns
         CREATE TYPE userrole AS ENUM ('owner','workshop_user','workshop_employee');
+        BEGIN
+          ALTER TABLE users ALTER COLUMN role TYPE userrole USING lower(role)::userrole;
+        EXCEPTION WHEN undefined_column THEN
+          -- users.role finns inte ännu – ignorera
+        END;
+        ALTER TABLE users ALTER COLUMN role SET DEFAULT 'workshop_user'::userrole;
       END IF;
-    END$$;
+    END $$;
     """))
 
-    # 2) Sänk värden till gemener OCH casta till enum
-    conn.execute(text("""
-    UPDATE users
-    SET role = LOWER(role::text)::userrole
-    WHERE role IS NOT NULL AND role::text <> LOWER(role::text);
-    """))
-
-    # 3) Om kolumnen INTE är av enum-typen -> casta om den
-    conn.execute(text("""
-    DO $$
-    BEGIN
-      IF EXISTS (
-        SELECT 1
-        FROM information_schema.columns
-        WHERE table_name='users' AND column_name='role' AND udt_name <> 'userrole'
-      ) THEN
-        ALTER TABLE users
-          ALTER COLUMN role TYPE userrole
-          USING LOWER(role::text)::userrole;
-      END IF;
-    END$$;
-    """))
-
-    # 4) Sätt default till enum-värdet
-    conn.execute(text("""
-    ALTER TABLE users
-      ALTER COLUMN role SET DEFAULT 'workshop_user'::userrole;
-    """))
 
 print("Färdig.")
