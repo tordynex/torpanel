@@ -15,6 +15,7 @@ if "autonexo" not in cols:
         conn.execute(text("ALTER TABLE workshops ALTER COLUMN autonexo DROP DEFAULT;"))
 
 # ---- FIX FÖR USER ROLE (ENUM + lowercase) ----
+# ---- FIX FÖR USER ROLE (ENUM + lowercase) ----
 print("Normaliserar användarroller + säkerställer ENUM-typ...")
 
 with engine.begin() as conn:
@@ -28,10 +29,10 @@ with engine.begin() as conn:
     END$$;
     """))
 
-    # 2) Sänk värden till gemener (fungerar både om kolumnen är text eller enum)
+    # 2) Sänk värden till gemener OCH casta till enum
     conn.execute(text("""
     UPDATE users
-    SET role = LOWER(role::text)
+    SET role = LOWER(role::text)::userrole
     WHERE role IS NOT NULL AND role::text <> LOWER(role::text);
     """))
 
@@ -51,7 +52,7 @@ with engine.begin() as conn:
     END$$;
     """))
 
-    # 4) Sätt default till enum-värdet (igen, ifall tabellen var gammal)
+    # 4) Sätt default till enum-värdet
     conn.execute(text("""
     ALTER TABLE users
       ALTER COLUMN role SET DEFAULT 'workshop_user'::userrole;
