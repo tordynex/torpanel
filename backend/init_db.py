@@ -65,5 +65,44 @@ with engine.begin() as conn:
     END $$;
     """))
 
+with engine.begin() as conn:
+    # Baybooking.status
+    conn.execute(text("""
+        UPDATE baybookings
+        SET status = LOWER(status)
+        WHERE status IS NOT NULL AND status <> LOWER(status);
+    """))
+
+    # WorkshopServiceItem
+    conn.execute(text("""
+        UPDATE workshop_service_items
+        SET price_type = LOWER(price_type)
+        WHERE price_type IS NOT NULL AND price_type <> LOWER(price_type);
+    """))
+    conn.execute(text("""
+        UPDATE workshop_service_items
+        SET vehicle_class = LOWER(vehicle_class)
+        WHERE vehicle_class IS NOT NULL AND vehicle_class <> LOWER(vehicle_class);
+    """))
+
+    # WorkshopBay
+    conn.execute(text("""
+        UPDATE workshopbays
+        SET bay_type = LOWER(bay_type)
+        WHERE bay_type IS NOT NULL AND bay_type <> LOWER(bay_type);
+    """))
+
+    # Vehicle classes i relaterade tabeller
+    conn.execute(text("""
+        UPDATE workshopbay_vehicleclass
+        SET vehicle_class = LOWER(vehicle_class)
+        WHERE vehicle_class IS NOT NULL AND vehicle_class <> LOWER(vehicle_class);
+    """))
+    conn.execute(text("""
+        UPDATE vehicleprofiles
+        SET vehicle_class = LOWER(vehicle_class)
+        WHERE vehicle_class IS NOT NULL AND vehicle_class <> LOWER(vehicle_class);
+    """))
+
 
 print("Färdig.")
