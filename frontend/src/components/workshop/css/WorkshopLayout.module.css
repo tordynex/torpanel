@@ -1,0 +1,206 @@
+/* ===== befintligt oförändrat ovanför ... ===== */
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;             /* lite tätare = modernare */
+  padding-left: 1rem;       /* något mindre vänsterpadding */
+  padding-right: 1rem;
+}
+
+.navLink {
+  color: white;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.98rem;
+  padding: 0.35rem 0.4rem;
+  border-radius: 8px;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+.navLink:hover {
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+.active { color: #ef5027; }
+
+/* ===== inställningar-grupp ===== */
+.group {
+  margin-top: 0.25rem;
+}
+
+.groupLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #9ca3af;          /* neutral grå */
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.25rem 0.4rem;
+  margin-top: 0.25rem;
+  user-select: none;
+}
+
+.groupIcon {
+  font-size: 0.85rem;
+}
+
+.subNav {
+  margin-top: 0.25rem;
+  margin-left: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding-left: 0.6rem;
+  border-left: 1px solid rgba(255, 255, 255, 0.08); /* subtil guide-linje */
+}
+
+.subNavLink {
+  color: #d1d5db;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.92rem;
+  padding: 0.3rem 0.35rem;
+  border-radius: 6px;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+.subNavLink:hover {
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* ===== resten oförändrat nedan ... ===== */
+
+.container {
+  display: flex;
+  height: 100dvh;
+  background-color: #ffffff;
+  font-family: sans-serif;
+}
+
+.sidebar {
+  width: 220px;
+  background-color: #1f2937;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 0;
+}
+
+.logoWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50px;
+  margin-bottom: 2rem;
+}
+
+.logo {
+  max-width: 180px;
+  height: auto;
+}
+
+.main {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.header {
+  background-color: #f9fafb;
+  padding: 1rem 2rem;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 5rem;
+  flex: 0 0 auto;
+}
+
+
+.headerTitle {
+  font-weight: 700;
+  font-size: 1rem;
+  color: #111827;
+}
+
+.headerBadge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border: 1px solid #e5e7eb;
+  border-radius: 999px;
+  background: #fff;
+  color: #374151;
+  font-size: 0.92rem;
+  max-width: 52vw; /* undvik overflow på små skärmar */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.headerName {
+  font-weight: 600;
+  color: #111827;
+}
+
+.headerWorkshop {
+  color: #4b5563;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+.sep {
+  color: #9ca3af;
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.content {
+  padding: 0;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+}
+
+.logoutBtn {
+  appearance: none;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #ef5027;
+  background: #ef5027;
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.92rem;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+.logoutBtn:hover {
+  background: #d64420;
+  border-color: #d64420;
+}
+
+
+/* Responsiv finputsning */
+@media (max-width: 640px) {
+  .headerBadge {
+    max-width: 48vw;
+    padding: 5px 8px;
+    font-size: 0.88rem;
+  }
+  .headerTitle {
+    font-size: 0.95rem;
+  }
+}

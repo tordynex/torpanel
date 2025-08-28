@@ -1,0 +1,250 @@
+/* Wrapper & layout */
+.formWrapper {
+  --bg: #f9fafb;
+  --card: #ffffff;
+  --text: #1a1a1a;
+  --muted: #6b7280;
+  --line: #e5e7eb;
+  --brand: #2563eb;
+  --brand-700: #1d4ed8;
+  --danger: #dc2626;
+  --danger-700: #b91c1c;
+  --focus: #3b82f6;
+
+  background: var(--bg);
+  color: var(--text);
+  padding: 20px;
+  border-radius: 12px;
+}
+
+/* Header row */
+.headerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.headerActions {
+  display: flex;
+  gap: 8px;
+}
+
+/* Cards */
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 14px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.dangerCard {
+  border-color: rgba(220, 38, 38, 0.35);
+}
+
+.cardHeader {
+  margin-bottom: 12px;
+}
+
+.cardHeader h4 {
+  margin: 0 0 4px 0;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.muted {
+  color: var(--muted);
+  font-size: 13px;
+  margin: 0;
+}
+
+/* Grid */
+.grid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+@media (max-width: 840px) {
+  .grid2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Fields */
+.field,
+.fieldFull {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fieldFull {
+  grid-column: 1 / -1;
+}
+
+.field span {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+input::placeholder {
+  color: #9ca3af;
+}
+
+input:focus {
+  border-color: var(--focus);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+/* Checkbox row */
+.switchRow {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  background: #f9fafb;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.switchRow span {
+  color: var(--text);
+}
+
+.switchRow input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+}
+
+/* Select multiple */
+.fieldBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.selectBox {
+  min-height: 120px;
+  background: #ffffff;
+  border: 1px solid var(--line);
+  color: var(--text);
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 14px;
+  outline: none;
+}
+
+.selectBox:focus {
+  border-color: var(--focus);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+/* Buttons */
+.primaryBtn,
+.secondaryBtn {
+  border: 1px solid transparent;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: transform 0.05s ease, background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.primaryBtn {
+  background: var(--brand);
+  color: #fff;
+  font-weight: 600;
+}
+
+.primaryBtn:hover {
+  background: var(--brand-700);
+}
+
+.primaryBtn:active {
+  transform: translateY(1px);
+}
+
+.primaryBtn[disabled] {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.secondaryBtn {
+  background: #ffffff;
+  color: var(--text);
+  border-color: var(--line);
+}
+
+.secondaryBtn:hover {
+  background: #f3f4f6;
+}
+
+/* Delete section */
+.deleteInitBtn {
+  background: transparent;
+  color: var(--danger);
+  border: 1px solid rgba(220, 38, 38, 0.4);
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.deleteInitBtn:hover {
+  background: rgba(220, 38, 38, 0.08);
+}
+
+.confirmRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.confirmText {
+  margin: 0;
+  color: var(--muted);
+}
+
+.confirmActions {
+  display: flex;
+  gap: 8px;
+}
+
+.deleteBtn {
+  background: var(--danger);
+  color: #fff;
+  border: 1px solid var(--danger-700);
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.deleteBtn:hover {
+  background: var(--danger-700);
+}
+
+.cancelBtn {
+  background: #ffffff;
+  color: var(--text);
+  border: 1px solid var(--line);
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.cancelBtn:hover {
+  background: #f3f4f6;
+}

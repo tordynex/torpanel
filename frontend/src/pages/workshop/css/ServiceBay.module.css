@@ -1,0 +1,215 @@
+/* =========================
+   Page-layout (i .content)
+   ========================= */
+.page {
+  /* fyll föräldern (som är flex och overflow:hidden) */
+  inline-size: 100%;
+  block-size: 100%;
+  min-height: 0;
+
+  /* kolumnlayout och inre spacing */
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  /* inre padding men fortfarande full-bleed i nya layouten */
+  padding: 16px;
+  box-sizing: border-box;
+
+  /* den här komponenten sköter scrollen */
+  overflow: auto;
+
+  color: #222;
+  background: #fff; /* eller transparent om du vill ärva */
+}
+
+/* Valfri variant om du vill köra kant-till-kant */
+.page--fullBleed {
+  padding: 0;
+}
+
+/* =========================
+   Header (sticky i page-scrollen)
+   ========================= */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  padding: 8px 0 16px;
+  border-bottom: 1px solid #e5e7eb;
+
+  /* sticky inom .page (som scrollar) */
+  position: sticky;
+  top: 0;
+  background: #fff; /* matcha .page-bg så den inte "genomlyser" vid scroll */
+  z-index: 1;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #222;
+  min-width: 0; /* undvik overflow i smala lägen */
+}
+.subtitle {
+  margin: 4px 0 0;
+  color: #6b7280;
+}
+
+/* =========================
+   Badge / status
+   ========================= */
+.badge {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  color: #1f2937;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ef5027;
+  box-shadow: 0 0 0 3px rgba(239, 80, 39, 0.15);
+  flex: 0 0 auto;
+}
+
+/* =========================
+   Grid för korten
+   ========================= */
+.bayGrid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  min-width: 0; /* så gridbarn inte spränger layouten */
+}
+
+@media (max-width: 1600px) { .bayGrid { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+@media (max-width: 1400px) { .bayGrid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (max-width: 1100px) { .bayGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 800px)  { .bayGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 520px)  { .bayGrid { grid-template-columns: 1fr; } }
+
+/* =========================
+   Kort (bay)
+   ========================= */
+.bayCard {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 6px 18px rgba(17, 24, 39, 0.06);
+  display: grid;
+  gap: 10px;
+  min-width: 0; /* så texten kan trunkeras inuti */
+}
+
+/* Header i kortet (titel + typ-badge) */
+.bayHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
+}
+.bayTitle {
+  margin: 0;
+  font-weight: 700;
+  color: #111827;
+  font-size: 15px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Badge för typ */
+.bayTypeBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+  color: #1f2937;
+  font-weight: 600;
+  font-size: 12px;
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+
+/* Meta-rad (ID, workshop) */
+.bayMeta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Actionrad (knappar) */
+.bayActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* =========================
+   Buttons
+   ========================= */
+.btnGhost,
+.refreshBtn {
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  padding: 6px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  font: inherit;
+  transition: background-color .15s ease, color .15s ease, border-color .15s ease, transform .03s ease;
+}
+.btnGhost:hover,
+.refreshBtn:hover {
+  border-color: #ef5027;
+  color: #ef5027;
+}
+.btnGhost:active,
+.refreshBtn:active {
+  transform: translateY(1px);
+}
+
+/* Header-rad i vänster card (titel + uppdatera-knapp) */
+.cardHeaderRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+  min-width: 0;
+}
+
+/* =========================
+   Felruta
+   ========================= */
+.errorPlaceholder {
+  border: 1px solid #fecaca !important;
+  color: #b91c1c !important;
+  background: #fff7f7 !important;
+  border-radius: 10px;
+  padding: 8px 10px;
+}
+
+/* =========================
+   Småskärmar
+   ========================= */
+@media (max-width: 640px) {
+  .page { padding: 12px; gap: 12px; }
+  .header { padding: 8px 0 12px; }
+}

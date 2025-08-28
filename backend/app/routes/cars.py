@@ -24,7 +24,7 @@ def create_car(car: schemas.CarCreate, db: Session = Depends(get_db)):
     db.refresh(new_car)
     return new_car
 
-@router.get("/all", response_model=List[schemas.CarRead])
+@router.get("/all", response_model=List[schemas.CarReadSimple])
 def get_all_cars(db: Session = Depends(get_db)):
     return db.query(models.Car).all()
 

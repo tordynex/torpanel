@@ -1,0 +1,334 @@
+/* =========================
+   BookingDetailsModal – Light Theme
+   ========================= */
+
+:root {
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f8fafc;
+  --border: #e2e8f0;
+  --text: #0f172a;
+  --text-muted: #6b7280;
+
+  --primary: #2563eb;
+  --primary-600: #1d4ed8;
+
+  --warn: #f59e0b;
+  --warn-600: #d97706;
+
+  --danger: #ef4444;
+  --danger-600: #dc2626;
+}
+
+/* Täck hela viewporten och centrera modalen */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999; /* ovanför resten */
+}
+
+/* Flex-col: header (fast) + content (scroll) + actions (fast) */
+.modal {
+  background: var(--surface);
+  color: var(--text);
+  width: min(960px, 96vw);
+  max-height: 90vh;
+  border-radius: 12px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header och actions ska inte scrolla */
+.header {
+  flex: 0 0 auto;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--surface);
+}
+
+.headerTitle { display: flex; gap: 10px; align-items: center; }
+.headerTitle h2 { margin: 0; font-size: 18px; font-weight: 700; color: var(--text); }
+
+.headerActions { display: flex; align-items: center; gap: 6px; }
+
+.iconBtn {
+  background: transparent;
+  border: 0;
+  padding: 6px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.iconBtn:hover { background: #f1f5f9; }
+.iconBtn:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+
+.actions {
+  flex: 0 0 auto;
+  padding: 12px 20px;
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+/* Scrollbar bara här */
+.content {
+  flex: 1 1 auto;
+  min-height: 0;           /* viktigt för overflow i flex-container */
+  overflow-y: auto;
+  padding: 16px 20px;
+  background: var(--bg);
+}
+
+/* Meta-rad och formulär */
+.metaGrid { display: grid; gap: 8px; grid-template-columns: 1fr 1fr; }
+.metaItem { display: flex; gap: 8px; align-items: center; color: #334155; }
+.metaItem svg { opacity: .9; }
+
+.formGrid { display: grid; gap: 12px; }
+.label { display: grid; gap: 6px; font-weight: 500; color: var(--text); }
+
+.input, .textarea {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font: inherit;
+  background: var(--surface);
+  color: var(--text);
+}
+.input:focus, .textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(37,99,235,.15);
+}
+
+.readonlyField {
+  background: var(--surface-2);
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+
+.timeRow { display: grid; gap: 12px; grid-template-columns: 1fr 1fr; }
+.timeField input:invalid { border-color: var(--danger-600); }
+
+/* Knappar */
+.leftActions { display: flex; gap: 8px; }
+.rightActions { display: flex; gap: 8px; align-items: center; }
+.btnIcon { margin-right: 8px; }
+
+.primaryBtn,
+.warnBtn,
+.dangerBtn,
+.ghostBtn {
+  border: 0;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.primaryBtn { background: var(--primary); color: #fff; }
+.primaryBtn:hover { background: var(--primary-600); }
+
+.warnBtn { background: var(--warn); color: #111827; }
+.warnBtn:hover { background: var(--warn-600); color: #fff; }
+
+.dangerBtn { background: var(--danger); color: #fff; }
+.dangerBtn:hover { background: var(--danger-600); }
+
+.ghostBtn { background: #f1f5f9; color: var(--text); }
+.ghostBtn:hover { background: #e2e8f0; }
+
+/* Alerts */
+.alertError {
+  display:flex; gap:8px; align-items:center; padding:10px 12px; border-radius:10px;
+  background:#fee2e2; border:1px solid #fecaca; color:#7f1d1d;
+}
+
+/* Confirm delete */
+.confirmDelete {
+  display: inline-flex;
+  gap: 10px;
+  align-items: center;
+  padding: 8px 10px;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  border-radius: 10px;
+}
+.warnIcon { color: var(--warn); }
+
+/* =========================
+   Section Cards
+   ========================= */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  margin-bottom: 12px;
+}
+.cardHeader {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:12px 14px; border-bottom:1px solid var(--border);
+}
+.cardHeaderLeft { display:flex; gap:10px; align-items:center; }
+.cardHeaderLeft h3 { margin: 0; font-size: 16px; font-weight: 700; color: var(--text); }
+.cardHeaderRight { display:flex; align-items:center; gap:8px; }
+.cardBody { padding:12px 14px; }
+
+/* Status chip */
+.statusChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 12px;
+}
+.tone-scheduled { background: #eef2ff; color: #3730a3; }
+.tone-inprogress { background: #ecfeff; color: #0e7490; }
+.tone-completed { background: #ecfdf5; color: #065f46; }
+.tone-canceled { background: #fee2e2; color: #7f1d1d; }
+
+/* VAT badge + price */
+.vatBadge {
+  background: var(--surface-2);
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.priceRow { display:grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items:end; }
+.priceLabel { font-size: 12px; color: var(--text-muted); }
+.priceValue { font-size: 22px; font-weight: 800; color: var(--text); }
+.priceSub { font-size: 16px; font-weight: 600; color: var(--text-muted); }
+
+/* =========================
+   Radio Tiles (prissättning)
+   ========================= */
+.tileGrid {
+  display:grid;
+  gap:10px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+.tile {
+  display:grid;
+  grid-template-columns: 36px 1fr;
+  gap:10px;
+  align-items:center;
+  padding:10px;
+  border:1px solid var(--border);
+  border-radius:12px;
+  cursor:pointer;
+  background: var(--surface);
+  transition: box-shadow .15s ease, border-color .15s ease, transform .04s ease;
+}
+.tile:hover { box-shadow: 0 6px 16px rgba(0,0,0,.06); }
+.tileChecked { border-color: var(--primary); box-shadow: 0 6px 16px rgba(37,99,235,.12); }
+.tileDisabled { opacity: .55; cursor:not-allowed; }
+.tile input { display:none; }
+.tileIcon { display:flex; align-items:center; justify-content:center; }
+.tileTitle { font-weight:800; color: var(--text); }
+.tileDesc { color: var(--text-muted); font-size: 12px; }
+
+/* =========================
+   Complete panel
+   ========================= */
+.completeGrid { display: grid; gap: 12px; grid-template-columns: 1fr; }
+.completeActions { display: flex; gap: 8px; justify-content: flex-end; }
+.previewLine { font-size: 14px; color: var(--text); }
+
+/* Stapla input + hjälpt texter vertikalt */
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;              /* avstånd mellan input och småtexter */
+  margin-top: 8px;       /* lite luft uppåt */
+}
+
+/* Säkerställ att input fyller raden */
+.fieldGroup :global(.input),
+.fieldGroup input {
+  width: 100%;
+}
+
+/* Finjustera typografi på småtexter */
+.fieldGroup small { line-height: 1.35; }
+
+/* Hjälptexter / fel */
+.muted { color: var(--text-muted); }
+.errorText { color: #b91c1c; }
+
+/* Bevarar kompatibilitet om .error används som block */
+.error {
+  background: #fee2e2;
+  color: #7f1d1d;
+  border: 1px solid #fecaca;
+  padding: 8px 10px;
+  border-radius: 10px;
+}
+
+/* Tooltip för bilkort / registreringsnummer */
+.metaItem[data-regnr] {
+  position: relative;
+  cursor: help;
+}
+
+.metaItem[data-regnr]::after {
+  content: attr(data-regnr);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-4px);
+  background: #111827;
+  color: #fff;
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s ease, transform .2s ease;
+}
+
+.metaItem[data-regnr]::before {
+  content: "";
+  position: absolute;
+  bottom: calc(100% - 4px);
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent transparent #111827 transparent;
+  opacity: 0;
+  transition: opacity .2s ease;
+}
+
+.metaItem[data-regnr]:hover::after,
+.metaItem[data-regnr]:hover::before {
+  opacity: 1;
+}
+
+/* =========================
+   Responsiva justeringar
+   ========================= */
+@media (max-width: 640px) {
+  .metaGrid { grid-template-columns: 1fr; }
+  .priceRow { grid-template-columns: 1fr; }
+  .timeRow { grid-template-columns: 1fr; }
+}

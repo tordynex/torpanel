@@ -1,40 +1,23 @@
 import axios from "axios"
 
 const instance = axios.create({
-  baseURL: "http://localhost:8000",
-  withCredentials: true,
+  baseURL: import.meta.env.VITE_API_BASE_URL || "http://localhost:8000",
+  withCredentials: true, // 👈 skicka cookies
 })
 
-function isTokenExpired(): boolean {
-  const token = localStorage.getItem("token")
-  if (!token) return true
-  try {
-    const payload = JSON.parse(atob(token.split(".")[1]))
-    const now = Date.now() / 1000
-    return payload.exp < now
-  } catch (e) {
-    return true
-  }
-}
-
-instance.interceptors.request.use(
-  (config) => {
-    if (isTokenExpired()) {
-      localStorage.removeItem("token")
-      window.location.href = "/login"
-      return Promise.reject("Token expired")
-    }
-
-    const token = localStorage.getItem("token")
-    if (token) {
-      config.headers = {
-        ...config.headers,
-        Authorization: `Bearer ${token}`,
+instance.interceptors.response.use(
+  (res) => res,
+  (err) => {
+    if (err?.response?.status === 401) {
+      // städa ev. client-state (inte token)
+      localStorage.removeItem("currentUser")
+      localStorage.removeItem("currentWorkshop")
+      if (window.location.pathname !== "/login") {
+        window.location.href = "/login"
       }
     }
-    return config
-  },
-  (error) => Promise.reject(error)
+    return Promise.reject(err)
+  }
 )
 
 export default instance

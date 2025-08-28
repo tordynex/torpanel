@@ -1,0 +1,266 @@
+/* =========================
+   Global reset (CSS Modules)
+   ========================= */
+:global(html, body, #root) {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: #f9fafb; /* matcha --bg så vi aldrig får "ram" runt innehållet */
+}
+
+/* =========================
+   Theme tokens / layout
+   ========================= */
+.wrapper {
+  --radius: 8px;
+  --bg: #f9fafb;
+  --surface: #ffffff;
+  --border: #d1d5db; /* gray-300 */
+  --muted: #6b7280;  /* gray-500 */
+  --text: #1f2937;   /* gray-800 */
+  --brand: #ef5027;  /* autonexo orange */
+  --brand-hover: #d64420;
+  --ring: #fde5dd;
+
+  /* layout vars */
+  --timeColWidth: 64px;
+  --dayHeaderH: 44px;
+  --rowH: 56px;
+
+  inline-size: 100%;
+  min-height: 100dvh; /* täck hela viewportens höjd, även på mobil */
+  background: var(--bg);
+  color: var(--text);
+
+  display: flex;
+  flex-direction: column;
+
+  /* undvik dubbel-scroll på wrappern; låt mitt-innehållet sköta scroll */
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* =========================
+   Topbar
+   ========================= */
+.topbar {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  position: sticky;
+  top: 0;
+  z-index: 20;
+
+  /* säkerställ att sticky-topbar inte skapar extra höjd runtom */
+  box-sizing: border-box;
+}
+.title {
+  font-weight: 700;
+  font-size: 18px;
+}
+.controls {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* =========================
+   Inputs / selects
+   ========================= */
+.selectLabel {
+  font-size: 14px;
+  color: var(--muted);
+}
+.select {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 12px;
+  background-color: #fff;
+  color: var(--text);
+  outline: none;
+}
+.select:focus {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px var(--ring);
+}
+
+/* =========================
+   Buttons
+   ========================= */
+.btn {
+  appearance: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 14px;
+  transition:
+    background-color .15s ease,
+    color .15s ease,
+    border-color .15s ease,
+    box-shadow .15s ease,
+    transform .03s ease;
+  user-select: none;
+}
+.btn:active { transform: translateY(1px); }
+
+.btnPrimary {
+  background-color: var(--brand);
+  color: #fff;
+  box-shadow: 0 6px 16px rgba(239, 80, 39, 0.18);
+}
+.btnPrimary:hover { background-color: var(--brand-hover); }
+
+.btnGhost {
+  background: transparent;
+  color: var(--brand);
+  border-color: var(--brand);
+  border: 1px solid var(--brand);
+}
+.btnGhost:hover {
+  background: var(--brand);
+  color: #fff;
+}
+
+/* =========================
+   Header row (används som list-header)
+   ========================= */
+.headerGrid {
+  display: grid;
+  grid-template-columns: var(--timeColWidth) repeat(7, 1fr);
+  height: var(--dayHeaderH);
+  border-bottom: 1px solid var(--border);
+  background: #fbfbfb;
+}
+.headerDay {
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  font-weight: 600;
+  color: var(--text);
+  border-right: 1px solid var(--border);
+}
+.headerDay:last-child { border-right: none; }
+.isToday { color: var(--brand); }
+
+/* =========================
+   Scroll area / content
+   ========================= */
+/* Använd denna klass för området som ska scrolla mellan topbar & footer.
+   Flex:1 + min-height:0 gör att det funkar i en flex-column utan höjd-”calcs”. */
+.scrollArea {
+  position: relative;
+  inline-size: 100%;
+  flex: 1 1 auto;
+  min-height: 0;            /* kritiskt för att tillåta scroll i flex-child */
+  overflow-y: auto;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+/* =========================
+   Card-stil (återanvänds)
+   ========================= */
+.booking {
+  position: relative;
+  border-radius: 8px;
+  padding: 10px 12px;
+  pointer-events: auto;
+  box-shadow: 0 8px 18px rgba(0,0,0,.04);
+  border: 1px solid transparent;
+  border-left: 4px solid var(--brand);
+  background: #fff;
+}
+.bookingHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.bookingTitle {
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.badge {
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background: #fff;
+}
+.bookingMeta {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+/* =========================
+   Statusfärger
+   ========================= */
+.status-completed {
+  background: #f0fdf4;
+  border-color: #86efac;
+}
+.status-completed .badge { border-color: #86efac; color: #14532d; }
+
+.status-cancelled {
+  background: #fef2f2;
+  border-color: #fecaca;
+}
+.status-cancelled .badge { border-color: #fecaca; color: #7f1d1d; }
+
+.status-booked {
+  background: #fff7ed;
+  border-color: #fdba74;
+}
+.status-booked .badge { border-color: #fdba74; color: #9a3412; }
+
+.status-in_progress {
+  background: #ecfeff;
+  border-color: #67e8f9;
+}
+.status-in_progress .badge { border-color: #67e8f9; color: #155e75; }
+
+.status-no_show {
+  background: #faf5ff;
+  border-color: #e9d5ff;
+}
+.status-no_show .badge { border-color: #e9d5ff; color: #581c87; }
+
+/* =========================
+   Footer
+   ========================= */
+.footer {
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+  padding: 8px 12px;
+  font-size: 12px;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  /* lås footer till sin naturliga höjd och låt mitten scrolla */
+  flex: 0 0 auto;
+  box-sizing: border-box;
+}
+.footerStrong { color: var(--text); }
+.footerRight { margin-left: auto; }
+
+/* =========================
+   Responsivt
+   ========================= */
+@media (max-width: 640px) {
+  .controls { gap: 6px; }
+  .select { max-width: 56vw; }
+}

@@ -1,0 +1,207 @@
+.form {
+  --radius: 8px;
+  --bg: transparent;
+  --surface: #ffffff;
+  --border: #d1d5db; /* gray-300 */
+  --muted: #6b7280;  /* gray-500 */
+  --text: #1f2937;   /* gray-800 */
+  --brand: #ef5027;  /* autonexo orange */
+  --brand-hover: #d64420;
+  --ring: #fde5dd;
+
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 1.25rem;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.header {
+  margin-bottom: .5rem;
+}
+.h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+.sub {
+  margin: .25rem 0 0;
+  color: var(--muted);
+  font-size: .95rem;
+}
+
+/* Layout */
+.row {
+  display: grid;
+  gap: 12px;
+  margin-top: 14px;
+}
+.twoCols {
+  grid-template-columns: 1fr 1fr;
+}
+@media (max-width: 640px) {
+  .twoCols {
+    grid-template-columns: 1fr;
+  }
+}
+
+.field { margin-top: 14px; }
+.label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text);
+  margin-bottom: 0.35rem;
+}
+
+/* Inputs */
+.input,
+.select,
+.textarea {
+  width: 100%;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background-color: #fff;
+  color: var(--text);
+  font-size: 1rem;
+  line-height: 1.4;
+  transition: border-color .15s ease, box-shadow .15s ease, background-color .15s ease;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.input::placeholder,
+.textarea::placeholder {
+  color: #9ca3af; /* gray-400 */
+}
+
+.input:focus,
+.select:focus,
+.textarea:focus {
+  outline: none;
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px var(--ring);
+}
+
+/* Select arrow (subtil) */
+.select {
+  background-image:
+    linear-gradient(45deg, transparent 50%, #9ca3af 50%),
+    linear-gradient(135deg, #9ca3af 50%, transparent 50%);
+  background-position:
+    right 0.8rem center,
+    right 0.55rem center;
+  background-size: 6px 6px, 6px 6px;
+  background-repeat: no-repeat;
+}
+
+/* Number/text tweaks */
+input[type="number"].input {
+  -moz-appearance: textfield;
+}
+input[type="number"].input::-webkit-outer-spin-button,
+input[type="number"].input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.help {
+  margin-top: 0.35rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+/* Tillgänglighet */
+.availabilityRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+}
+.availabilityOk {
+  color: #166534; /* green-800 */
+  background: #f0fdf4; /* green-50 */
+  border: 1px solid #86efac; /* green-300 */
+  padding: 6px 8px;
+  border-radius: 6px;
+  font-size: .95rem;
+}
+.availabilityNo {
+  color: #7f1d1d; /* red-900 */
+  background: #fef2f2; /* red-50 */
+  border: 1px solid #fecaca; /* red-200 */
+  padding: 6px 8px;
+  border-radius: 6px;
+  font-size: .95rem;
+}
+
+/* Fel & info */
+.error {
+  margin-top: 1rem;
+  padding: 0.7rem 0.9rem;
+  border: 1px solid #fecaca;
+  background: #fef2f2;
+  color: #b91c1c;
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+.info {
+  margin-top: .8rem;
+  padding: .6rem .8rem;
+  border: 1px solid #bfdbfe;
+  background: #eff6ff;
+  color: #1e40af;
+  border-radius: 6px;
+  font-size: .95rem;
+}
+
+/* Actions / knappar */
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  margin-top: 1rem;
+  padding-top: 0.9rem;
+  border-top: 1px dashed var(--border);
+}
+.btn {
+  appearance: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  transition: background-color .15s ease, color .15s ease, border-color .15s ease, box-shadow .15s ease, transform .03s ease;
+  user-select: none;
+}
+.btn:active { transform: translateY(1px); }
+.btn:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+.btnPrimary {
+  background-color: var(--brand);
+  color: #fff;
+  box-shadow: 0 6px 16px rgba(239, 80, 39, 0.18);
+}
+.btnPrimary:hover { background-color: var(--brand-hover); }
+.btnGhost {
+  background: transparent;
+  color: var(--brand);
+  border-color: var(--brand);
+  border: 1px solid var(--brand);
+}
+.btnGhost:hover {
+  background: var(--brand);
+  color: #fff;
+}
+
+/* Små skärmar */
+@media (max-width: 420px) {
+  .form { padding: 1rem; }
+  .actions { flex-direction: column-reverse; align-items: stretch; }
+  .btn { width: 100%; }
+}

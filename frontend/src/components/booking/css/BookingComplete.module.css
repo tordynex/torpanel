@@ -1,0 +1,262 @@
+:root {}
+
+/* Yttre skal */
+.shell {
+  position: relative;
+  min-height: 60vh;
+  display: grid;
+  place-items: center;
+  padding: 24px 16px;
+  background: #fff;
+}
+
+/* Kortet i mitten */
+.card {
+  position: relative;
+  width: 100%;
+  max-width: 720px;
+  background: #fff;
+  border: 1px solid var(--border, #e5e7eb);
+  border-radius: 16px;
+  padding: 22px 18px;
+  box-shadow: 0 10px 24px rgba(0,0,0,.06);
+}
+
+/* Check-ikon */
+.iconWrap {
+  display: grid;
+  place-items: center;
+  margin-top: 6px;
+  margin-bottom: 10px;
+}
+
+.checkSvg {
+  width: 84px;
+  height: 84px;
+  display: block;
+  overflow: visible;
+}
+
+/* Ring animation */
+.ring {
+  fill: none;
+  stroke: var(--brand-weak, rgba(239, 80, 39, .25));
+  stroke-width: 6;
+  stroke-linecap: round;
+  transform-origin: 32px 32px;
+  animation: ringPop .52s ease-out both, ringPulse 2.4s ease-in-out 0.6s infinite;
+}
+
+/* Check stroke animation */
+.tick {
+  fill: none;
+  stroke: var(--brand, #ef5027);
+  stroke-width: 6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 44;
+  stroke-dashoffset: 44;
+  animation: draw 600ms ease-out 160ms forwards, glow 2.2s ease-in-out 0.8s infinite alternate;
+}
+
+@keyframes draw {
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes ringPop {
+  0% { transform: scale(.6); opacity: 0; }
+  60% { transform: scale(1.06); opacity: 1; }
+  100% { transform: scale(1); }
+}
+
+@keyframes ringPulse {
+  0%,100% { filter: drop-shadow(0 0 0 rgba(239, 80, 39, .0)); }
+  50%    { filter: drop-shadow(0 0 10px rgba(239, 80, 39, .25)); }
+}
+
+@keyframes glow {
+  0% { filter: drop-shadow(0 0 0 rgba(239, 80, 39, 0)); }
+  100% { filter: drop-shadow(0 0 8px rgba(239, 80, 39, .35)); }
+}
+
+/* Typografi */
+.title {
+  margin: 0;
+  text-align: center;
+  font-weight: 900;
+  letter-spacing: -0.01em;
+  color: var(--text, #0f172a);
+  font-size: clamp(1.35rem, 2.5vw, 1.8rem);
+}
+
+.subtitle {
+  margin: 8px auto 14px;
+  text-align: center;
+  color: var(--muted, #6b7280);
+  max-width: 46ch;
+  line-height: 1.5;
+}
+
+/* Info-ruta */
+.info {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 10px;
+  align-items: flex-start;
+  border: 1px dashed var(--border, #e5e7eb);
+  background: #fafafa;
+  border-radius: 12px;
+  padding: 10px 12px;
+  margin: 8px 0 14px;
+}
+
+.infoIcon {
+  font-size: 1.25rem;
+  color: var(--brand, #ef5027);
+}
+
+.infoTitle {
+  font-weight: 800;
+  color: var(--text, #0f172a);
+  margin-bottom: 2px;
+}
+
+.infoText {
+  color: var(--text-secondary, #334155);
+  font-size: .95rem;
+}
+
+/* Åtgärder */
+.actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.actionsRight {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Knappar – harmoniserar med dina globala om de finns */
+.btn {
+  appearance: none;
+  border: 1px solid var(--border, #e5e7eb);
+  background: #fff;
+  color: var(--text, #0f172a);
+  cursor: pointer;
+  padding: .65rem 1rem;
+  border-radius: 10px;
+  font-weight: 800;
+  font-size: .95rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: transform .05s ease, background-color .2s ease, border-color .2s ease, color .2s ease;
+}
+
+.btn:hover { transform: translateY(-1px); }
+
+.btnPrimary {
+  background: var(--brand, #ef5027);
+  border-color: var(--brand, #ef5027);
+  color: #fff;
+}
+
+.btnPrimary:hover {
+  background: var(--brand-hover, #e34a23);
+  border-color: var(--brand-hover, #e34a23);
+}
+
+.btnLight {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+  color: var(--text, #0f172a);
+}
+
+.btnLight:hover {
+  background: #eef2f7;
+}
+
+.btnGhost {
+  background: transparent;
+  border-color: var(--brand, #ef5027);
+  color: var(--brand, #ef5027);
+}
+
+.btnGhost:hover {
+  background: var(--brand, #ef5027);
+  color: #fff;
+}
+
+/* Fotnot */
+.footnote {
+  margin: 12px 0 0;
+  color: var(--muted, #6b7280);
+  text-align: center;
+  font-size: .92rem;
+}
+
+/* Lätt konfetti-bakgrund (icke-blockerande) */
+.confetti {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.confetti span {
+  --x: 50%;
+  --delay: 0s;
+  --rot: 0deg;
+  position: absolute;
+  top: -8px;
+  left: var(--x);
+  width: 8px;
+  height: 14px;
+  background: var(--brand, #ef5027);
+  border-radius: 2px;
+  opacity: 0;
+  animation: fall 1.4s ease-out var(--delay) forwards;
+  transform: rotate(var(--rot));
+}
+.confetti span:nth-child(1){ --x: 18%; --delay: .05s; --rot: -18deg; }
+.confetti span:nth-child(2){ --x: 32%; --delay: .12s; --rot: 12deg;  background:#10b981;}
+.confetti span:nth-child(3){ --x: 44%; --delay: .08s; --rot: -8deg;  background:#3b82f6;}
+.confetti span:nth-child(4){ --x: 58%; --delay: .16s; --rot: 20deg;  background:#f59e0b;}
+.confetti span:nth-child(5){ --x: 66%; --delay: .02s; --rot: -12deg; background:#8b5cf6;}
+.confetti span:nth-child(6){ --x: 72%; --delay: .18s; --rot: 16deg;  background:#ef4444;}
+.confetti span:nth-child(7){ --x: 84%; --delay: .10s; --rot: -6deg;  background:#06b6d4;}
+.confetti span:nth-child(8){ --x: 26%; --delay: .14s; --rot: 8deg;   background:#f97316;}
+
+@keyframes fall {
+  0%   { transform: translateY(-12px) rotate(var(--rot)); opacity: 0; }
+  12%  { opacity: 1; }
+  100% { transform: translateY(120%) rotate(calc(var(--rot) + 180deg)); opacity: 0; }
+}
+
+/* Responsivt */
+@media (max-width: 720px) {
+  .card {
+    padding: 18px 14px;
+  }
+  .actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  .actionsRight {
+    width: 100%;
+    gap: 8px;
+  }
+  .actionsRight .btn {
+    flex: 1;
+    justify-content: center;
+  }
+  .btnGhost {
+    order: 3; /* “Föregående” hamnar under på mobil */
+  }
+}

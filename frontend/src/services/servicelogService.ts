@@ -1,6 +1,6 @@
 import axios from "@/utils/axios"
 
-const API_BASE = "https://autonexo-backend.onrender.com"
+const API_BASE = import.meta.env.VITE_API_BASE_URL
 const SERVICELOG_ENDPOINT = `${API_BASE}/servicelogs`
 
 export interface ServiceTask {

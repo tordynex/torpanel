@@ -1,9 +1,13 @@
 import { useNavigate } from "react-router-dom";
-import { useMemo } from "react";
+import { useState, useMemo } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useWorkshop } from "@/hooks/useWorkshops";
-import styles from "./Dashboard.module.css";
+import styles from "./css/Dashboard.module.css";
 import { PiHandWavingFill } from "react-icons/pi";
+import Modal from "@/components/common/Modal"
+import SimpleBookingForm from "@/components/booking/SimpleBookingForm";
+import BookingRequests from "@/components/workshop/dashboard/BookingRequests.tsx";
+import LatestBookings from "@/components/workshop/dashboard/LatestBookings.tsx";
 
 function getGreeting(): string {
   const h = new Date().getHours();
@@ -18,6 +22,7 @@ export default function Dashboard() {
 
   const userName = useMemo(() => auth?.username ?? "vän", [auth]);
   const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
 
   return (
     <div className={styles.page}>
@@ -70,23 +75,52 @@ export default function Dashboard() {
               className={styles.btnSecondary}
               onClick={() => navigate("/workshop/servicelog")}
             >
-              Ny service
+              Ny servicelog
             </button>
             <button
               className={styles.btnSecondary}
               onClick={() => navigate("/workshop/servicelog")}
             >
-              Lägg till bil
+              Sök servicelog
             </button>
-            <button
+              <button
               className={styles.btnSecondary}
-              onClick={() => navigate("/workshop/car-database")}
+              onClick={() => setOpen(true)}
+              disabled={!workshop}
             >
-              Visa loggar
+              Ny Snabb-bokning
             </button>
           </div>
         </div>
       </section>
+
+      <section className={styles.grid}>
+          <div className={styles.card}>
+            <BookingRequests />
+          </div>
+          <div className={styles.card}>
+            < LatestBookings limit={5}/>
+          </div>
+      </section>
+
+
+        <Modal
+        open={open}
+        title="Lägg till bokning"
+        onClose={() => setOpen(false)}
+      >
+        {workshop && (
+          <SimpleBookingForm
+            workshopId={workshop.id}
+            onSuccess={(booking) => {
+              setOpen(false);
+              navigate("/workshop/calendar");
+            }}
+            onCancel={() => setOpen(false)}
+          />
+        )}
+      </Modal>
+
     </div>
   );
 }

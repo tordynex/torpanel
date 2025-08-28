@@ -1,8 +1,9 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Optional
 from app.auth import get_current_user
 from app import models, schemas
+from app.models import UserRole, WorkshopBay, WorkshopServiceItem, User
 from app.database import get_db
 
 router = APIRouter()
@@ -36,9 +37,11 @@ def create_workshop(workshop: schemas.WorkshopCreate, db: Session = Depends(get_
 
     if workshop.user_ids:
         users = db.query(models.User).filter(models.User.id.in_(workshop.user_ids)).all()
-        for u in users:
-            if u.role != schemas.UserRole.WORKSHOP_USER:
-                raise HTTPException(status_code=400, detail=f"User '{u.username}' is not a workshop_user")
+        allowed = {UserRole.WORKSHOP_USER.value, UserRole.WORKSHOP_EMPLOYEE.value}
+        bad = [u for u in users if u.role not in allowed]
+        if bad:
+            names = ", ".join([u.username for u in bad])
+            raise HTTPException(status_code=400, detail=f"Users not allowed for workshop linkage: {names}")
         new_workshop.users = users
 
     db.add(new_workshop)
@@ -74,9 +77,11 @@ def update_workshop(workshop_id: int, data: schemas.WorkshopCreate, db: Session 
 
     if data.user_ids is not None:
         users = db.query(models.User).filter(models.User.id.in_(data.user_ids)).all()
-        for u in users:
-            if u.role != schemas.UserRole.WORKSHOP_USER:
-                raise HTTPException(status_code=400, detail=f"User '{u.username}' is not a workshop_user")
+        allowed = {UserRole.WORKSHOP_USER.value, UserRole.WORKSHOP_EMPLOYEE.value}
+        bad = [u for u in users if u.role not in allowed]
+        if bad:
+            names = ", ".join([u.username for u in bad])
+            raise HTTPException(status_code=400, detail=f"Users not allowed for workshop linkage: {names}")
         workshop.users = users
 
     db.commit()
@@ -116,3 +121,90 @@ def get_workshop_by_id(workshop_id: int, db: Session = Depends(get_db)):
     if not workshop:
         raise HTTPException(status_code=404, detail="Workshop not found")
     return workshop
+
+@router.get("/{workshop_id}/bays", response_model=List[schemas.WorkshopBayRead])
+def get_workshop_bays(
+    workshop_id: int,
+    db: Session = Depends(get_db),
+):
+    workshop = db.query(models.Workshop).filter(models.Workshop.id == workshop_id).first()
+    if not workshop:
+        raise HTTPException(status_code=404, detail="Workshop not found")
+
+    bays = (
+        db.query(models.WorkshopBay)
+        .filter(models.WorkshopBay.workshop_id == workshop_id)
+        .order_by(models.WorkshopBay.name.asc())
+        .all()
+    )
+    return bays
+
+
+# ----------------------------------
+#  Hämta anställda/anslutna användare i en verkstad
+#  Exempel: /workshops/123/employees?roles=workshop_employee&roles=workshop_user
+# ----------------------------------
+@router.get("/{workshop_id}/employees", response_model=List[schemas.UserSimple])
+def get_workshop_employees(
+    workshop_id: int,
+    roles: Optional[List[schemas.UserRole]] = Query(default=None, description="Filtrera på roller"),
+    db: Session = Depends(get_db),
+):
+    workshop = db.query(models.Workshop).filter(models.Workshop.id == workshop_id).first()
+    if not workshop:
+        raise HTTPException(status_code=404, detail="Workshop not found")
+
+    q = (
+        db.query(models.User)
+        .join(models.user_workshop_association,
+              models.user_workshop_association.c.user_id == models.User.id)
+        .filter(models.user_workshop_association.c.workshop_id == workshop_id)
+    )
+
+    if roles:
+        # mappar Pydantic-enums till DB-värden (str)
+        role_values = [r.value if hasattr(r, "value") else str(r) for r in roles]
+        q = q.filter(models.User.role.in_(role_values))
+
+    users = q.order_by(models.User.username.asc()).all()
+    return users
+
+
+# ----------------------------------
+#  Hämta service items för en verkstad
+#  Exempel:
+#   /workshops/123/service-items?is_active=true
+#   /workshops/123/service-items?vehicle_class=suv
+#   /workshops/123/service-items?price_type=fixed
+# ----------------------------------
+@router.get("/{workshop_id}/service-items", response_model=List[schemas.WorkshopServiceItemRead])
+def get_workshop_service_items(
+    workshop_id: int,
+    is_active: Optional[bool] = Query(default=None),
+    vehicle_class: Optional[schemas.VehicleClass] = Query(default=None),
+    price_type: Optional[schemas.ServicePriceType] = Query(default=None),
+    db: Session = Depends(get_db),
+):
+    workshop = db.query(models.Workshop).filter(models.Workshop.id == workshop_id).first()
+    if not workshop:
+        raise HTTPException(status_code=404, detail="Workshop not found")
+
+    q = (
+        db.query(models.WorkshopServiceItem)
+        .filter(models.WorkshopServiceItem.workshop_id == workshop_id)
+    )
+
+    if is_active is not None:
+        q = q.filter(models.WorkshopServiceItem.is_active == is_active)
+
+    if vehicle_class is not None:
+        # enum till str-värde om nödvändigt
+        vc_val = vehicle_class.value if hasattr(vehicle_class, "value") else str(vehicle_class)
+        q = q.filter(models.WorkshopServiceItem.vehicle_class == vc_val)
+
+    if price_type is not None:
+        pt_val = price_type.value if hasattr(price_type, "value") else str(price_type)
+        q = q.filter(models.WorkshopServiceItem.price_type == pt_val)
+
+    items = q.order_by(models.WorkshopServiceItem.name.asc()).all()
+    return items

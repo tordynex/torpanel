@@ -2,7 +2,7 @@ import { useState } from "react"
 import carService from "@/services/carService"
 import workshopService from "@/services/workshopService"
 import type { Car } from "@/services/carService"
-import styles from "./CarDatabase.module.css"
+import styles from "./css/CarDatabase.module.css"
 import { MdVerifiedUser } from "react-icons/md";
 
 export default function CarDatabase() {

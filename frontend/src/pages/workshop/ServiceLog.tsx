@@ -1,20 +1,23 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { useWorkshop } from "@/hooks/useWorkshops";
 import SelectOrCreateCar from "@/components/workshop/SelectOrCreateCar";
 import ServiceLogForm from "@/components/workshop/ServiceLogForm";
 import type { Car } from "@/services/carService";
 import type { ServiceLog } from "@/services/servicelogService";
-import styles from "./ServiceLogPage.module.css";
+import servicelogService from "@/services/servicelogService";
+import styles from "./css/ServiceLogPage.module.css";
 
 export default function ServiceLogPage() {
   const [selectedCar, setSelectedCar] = useState<Car | null>(null);
   const [latestLog, setLatestLog] = useState<ServiceLog | null>(null);
 
-  const auth = useAuth();
-  const userName = useMemo(() => auth?.username ?? "användare", [auth]);
+  const [logs, setLogs] = useState<ServiceLog[]>([]);
+  const [loadingLogs, setLoadingLogs] = useState(false);
+  const [errorLogs, setErrorLogs] = useState<string | null>(null);
 
-  const workshop = useWorkshop();
+  function formatMileage(m) {
+    return `${m.toLocaleString("sv-SE")} km (${(m / 10).toLocaleString("sv-SE")} mil)`;
+  }
 
   const handleCarSelected = (car: Car) => {
     setSelectedCar(car);
@@ -23,27 +26,34 @@ export default function ServiceLogPage() {
 
   const handleLogSaved = (log: ServiceLog) => {
     setLatestLog(log);
+    // Uppdatera listan direkt överst
+    setLogs((prev) => [log, ...prev]);
   };
+
+  // Hämta serviceloggar när bil bekräftas
+  useEffect(() => {
+  let alive = true;
+  (async () => {
+    if (!selectedCar?.id) { setLogs([]); return; }
+    setLoadingLogs(true);
+    setErrorLogs(null);
+    try {
+      const data = await servicelogService.fetchLogsForCar(selectedCar.id); // 👈 bytt metodnamn
+      if (!alive) return;
+      setLogs((data || []).sort((a, b) => (a.date < b.date ? 1 : -1)));
+    } catch (e) {
+      if (!alive) return;
+      setErrorLogs("Kunde inte hämta serviceloggar.");
+      setLogs([]);
+    } finally {
+      if (alive) setLoadingLogs(false);
+    }
+  })();
+  return () => { alive = false; };
+}, [selectedCar?.id]);
 
   return (
     <div className={styles.page}>
-      <header className={styles.header}>
-        <div>
-          <h2 className={styles.title}>Serviceloggar</h2>
-          <p className={styles.subtitle}>Inloggad: <strong>{userName}</strong></p>
-        </div>
-
-        <div className={styles.badge}>
-          <span className={styles.dot} />
-          {workshop ? (
-            <>
-              {workshop.name} • {workshop.city}
-            </>
-          ) : (
-            <>Laddar verkstad…</>
-          )}
-        </div>
-      </header>
 
       <section className={styles.grid}>
         {/* Vänster kolumn: välj/skapabil */}
@@ -61,9 +71,58 @@ export default function ServiceLogPage() {
               </div>
             </div>
           )}
+
+           {/* Lista med befintliga loggar */}
+          <div className={styles.divider} />
+          <div className={styles.cardTitle}>Historik</div>
+          {!selectedCar ? (
+            <div className={styles.placeholder}>Ingen bil vald.</div>
+          ) : loadingLogs ? (
+            <div className={styles.info}>Hämtar historik…</div>
+          ) : errorLogs ? (
+            <div className={styles.warning}>{errorLogs}</div>
+          ) : logs.length === 0 ? (
+            <div className={styles.info}>Inga serviceloggar ännu.</div>
+          ) : (
+            <ul className={styles.logList}>
+              {logs.map((l) => (
+                <li key={l.id} className={styles.logItem}>
+                  {/* Översta raden: datum, mätarställning, verkstad */}
+                  <div className={styles.logRow}>
+                    <div><strong>{l.date}</strong></div>
+                    <div className={styles.logRowRight}>
+                      <div className={styles.badgeSmall}>
+                        {l.workshop_name ?? "Okänd verkstad"}
+                      </div>
+                      <div>{formatMileage(l.mileage)}</div>
+                    </div>
+                  </div>
+
+                  {/* Utfört arbete */}
+                  <div className={styles.logWork}>
+                    {l.work_performed || <em>Utan beskrivning</em>}
+                  </div>
+
+                  {/* Tasks-lista (om finns) */}
+                  {Array.isArray(l.tasks) && l.tasks.length > 0 && (
+                    <div className={styles.taskList}>
+                      {l.tasks.map((t) => (
+                        <div key={t.id} className={styles.taskItem}>
+                          <div className={styles.taskTitle}>{t.title}</div>
+                          {t.comment && <div className={styles.taskComment}>{t.comment}</div>}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </li>
+              ))}
+            </ul>
+          )}
+
+
         </div>
 
-        {/* Höger kolumn: formulär */}
+        {/* Höger kolumn: formulär + logglista */}
         <div className={styles.card}>
           <div className={styles.cardTitle}>Skapa servicelog</div>
           {!selectedCar ? (

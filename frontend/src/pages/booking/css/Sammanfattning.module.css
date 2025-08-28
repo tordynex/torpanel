@@ -1,0 +1,315 @@
+:root {}
+
+.helpLink {
+  color: var(--brand);
+  font-weight: 700;
+}
+.helpLink:hover { text-decoration: underline; }
+
+.card, .summaryCard {
+  margin-top: 8px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: #fff;
+  padding: 12px;
+}
+
+.cardTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 800;
+  margin: 0 0 8px 0;
+  color: var(--text);
+}
+
+.summaryGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.kv {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 6px;
+  margin: 4px 0;
+}
+.k { color: var(--text-muted, #666); font-weight: 600; }
+.v { color: var(--text); }
+
+.dateRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap; /* gör att checkbox hoppar ned på mindre skärmar */
+  margin-top: 4px;
+}
+.dateAndHelp {
+  min-width: 220px;
+  display: grid;
+  gap: 6px;
+}
+.dateInput {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: .6rem .75rem;
+  font-size: 1rem;
+  background: #fff;
+}
+.dateInput:focus {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px var(--brand-weak);
+}
+.muted { color: var(--text-muted, #666); }
+
+.info {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border: 1px dashed var(--border);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--text);
+}
+
+.alert {
+  margin-top: 10px;
+  padding: .7rem .9rem;
+  border: 1px solid #fecaca;
+  background: #fef2f2;
+  color: #b91c1c;
+  border-radius: 10px;
+  font-size: .95rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.availabilityBox {
+  display: grid;
+  gap: 6px;
+  padding: 8px;
+  border: 1px dashed var(--border);
+  border-radius: 10px;
+  background: #fafafa;
+}
+.line { color: var(--text); }
+.note { color: var(--text-muted, #666); margin: 4px 0 0 0; }
+
+.footerNote {
+  margin-top: 10px;
+  color: var(--text-muted, #666);
+}
+
+/* === Nya hjälpklasser för tydligare flöde === */
+
+.spacedTop {
+  margin-top: 12px;
+}
+
+.expandBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-secondary, #555);
+  padding: 6px 0;
+}
+
+.serviceList {
+  margin: 8px 0 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.serviceListItem {
+  padding: 6px 0;
+  border-top: 1px solid rgba(0,0,0,0.06);
+}
+
+.pill {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.06);
+  font-size: 12px;
+  line-height: 1.6;
+  margin-right: 6px;
+}
+
+.mutedSmall {
+  color: var(--text-tertiary, #777);
+  font-size: 12px;
+}
+
+/* === Kommentarsfält === */
+.field {
+  margin-top: 8px;
+  display: grid;
+  gap: 6px;
+}
+
+.textareaWrap {
+  position: relative;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: #fcfcfc;
+  transition: box-shadow .2s ease, border-color .2s ease, background .2s ease;
+}
+
+.textareaWrap:focus-within {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 4px var(--brand-weak, rgba(0,0,0,0.04));
+  background: #fff;
+}
+
+.leadingIcon {
+  position: absolute;
+  left: 10px;
+  top: 12px;
+  pointer-events: none;
+  opacity: .6;
+}
+
+.textarea {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  padding: 10px 40px 10px 36px;
+  font-size: 1rem;
+  line-height: 1.5;
+  resize: vertical;
+  min-height: 56px;
+  max-height: 320px;
+  color: var(--text);
+}
+
+.clearBtn {
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  border: none;
+  background: #eee;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+  color: #555;
+}
+.clearBtn:hover { background: #e5e5e5; }
+
+.fieldFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 4px;
+}
+.hint { color: var(--text-muted, #666); font-size: 12px; }
+.counter { font-variant-numeric: tabular-nums; font-size: 12px; color: var(--text-tertiary, #777); }
+
+.chipRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.chip {
+  border: 1px solid var(--border);
+  background: #fff;
+  padding: 6px 10px;
+  font-size: 12px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.chip:hover {
+  background: #fafafa;
+  border-color: var(--brand);
+}
+
+/* === Checkbox – modern look, mobilvänlig === */
+.checkboxWrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #fff;
+  transition: box-shadow .2s ease, border-color .2s ease, background .2s ease;
+}
+.checkboxWrap:hover {
+  border-color: var(--brand);
+  background: #fcfcff;
+}
+.checkboxInput {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.customBox {
+  width: 22px;
+  height: 22px;
+  border: 2px solid var(--border);
+  border-radius: 6px;
+  display: inline-block;
+  transition: all 0.2s ease;
+  background: #fff;
+  flex: 0 0 22px;
+}
+.checkboxLabel {
+  font-size: 0.95rem;
+  color: var(--text);
+}
+.checkboxInput:checked + .customBox {
+  background: var(--brand);
+  border-color: var(--brand);
+  box-shadow: 0 0 0 2px var(--brand-weak, rgba(0,0,0,0.05));
+}
+.checkboxInput:checked + .customBox::after {
+  content: "";
+  display: block;
+  width: 6px;
+  height: 10px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+  margin: 3px auto;
+}
+.checkboxInput:focus + .customBox {
+  outline: 2px solid var(--brand-weak);
+  outline-offset: 2px;
+}
+
+/* === Responsivitet === */
+@media (max-width: 720px) {
+  .summaryGrid {
+    grid-template-columns: 1fr;
+  }
+  .kv {
+    grid-template-columns: 120px 1fr;
+  }
+  .dateRow {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  .checkboxWrap {
+    width: 100%;        /* lättare att träffa på mobil */
+    justify-content: flex-start;
+  }
+  .dateAndHelp {
+    min-width: 0;
+  }
+  .dateInput {
+    width: 100%;
+  }
+}

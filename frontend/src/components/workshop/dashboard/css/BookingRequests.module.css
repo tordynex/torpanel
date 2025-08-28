@@ -1,0 +1,462 @@
+/* BookingRequests.module.css */
+
+/* === Kortcontainer ======================================================= */
+.brCard {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 6px 18px rgba(17, 24, 39, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* === Header ============================================================= */
+.brHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 10px;
+}
+
+.brTitle {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 800;
+  font-size: 1.05rem;
+  color: #1f2937;
+}
+
+.brActions {
+  display: inline-flex;
+  gap: 8px;
+}
+
+/* === Buttons (temat från Dashboard) ===================================== */
+.brBtn {
+  border-radius: 10px;
+  padding: 10px 12px;
+  cursor: pointer;
+  font-weight: 600;
+  border: 1px solid transparent;
+  background: transparent;
+  transition: transform .04s ease, box-shadow .2s, background-color .2s, color .2s, border-color .2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.brBtnPrimary {
+  background: #ef5027;
+  color: #ffffff;
+  border-color: #ef5027;
+}
+.brBtnPrimary:hover {
+  filter: brightness(1.03);
+  box-shadow: 0 8px 24px rgba(239, 80, 39, 0.25);
+  transform: translateY(-1px);
+}
+
+.brBtnSecondary {
+  background: #f9fafb;
+  color: #1f2937;
+  border-color: #e5e7eb;
+}
+.brBtnSecondary:hover {
+  background: #fff;
+  border-color: #ef5027;
+  color: #ef5027;
+}
+
+.brBtnGhost {
+  background: #ffffff;
+  color: #1f2937;
+  border-color: #e5e7eb;
+}
+.brBtnGhost:hover {
+  background: #f9fafb;
+  border-color: #ef5027;
+  color: #ef5027;
+}
+
+.brBtn:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* === Toolbar (filterrad) ================================================ */
+.brToolbar {
+  display: grid;
+  gap: 12px;
+}
+
+@media (min-width: 720px) {
+  .brToolbar {
+    grid-template-columns: auto 1fr;
+    align-items: center;
+  }
+}
+
+/* Tabs */
+.brTabs {
+  display: inline-flex;
+  gap: 6px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  padding: 6px;
+  border-radius: 12px;
+}
+
+.brTab {
+  appearance: none;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #1f2937;
+  padding: 8px 10px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color .2s, color .2s, border-color .2s, transform .04s ease;
+}
+.brTab:hover {
+  background: #fff;
+  border-color: #e5e7eb;
+}
+.isActive {
+  background: #ef5027;
+  color: #fff;
+  border-color: #ef5027;
+  box-shadow: 0 6px 16px rgba(239, 80, 39, 0.22);
+}
+
+.brPill {
+  margin-left: 8px;
+  background: #111827;
+  color: #fff;
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-size: 0.75rem;
+  line-height: 1.3;
+}
+
+/* Sök + datumfilter */
+.brFilters {
+  display: grid;
+  gap: 10px;
+}
+
+@media (min-width: 720px) {
+  .brFilters {
+    grid-template-columns: 1fr auto;
+    align-items: center;
+  }
+}
+
+.brSearch {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 10px 12px;
+  background: #fff;
+}
+.brSearch input {
+  outline: none;
+  border: none;
+  background: transparent;
+  flex: 1;
+  color: #111827;
+}
+.brSearch input::placeholder {
+  color: #9ca3af;
+}
+
+.brDateRange {
+  display: inline-flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.brDateRange label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: #374151;
+}
+.brDateRange input[type="date"] {
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  border-radius: 10px;
+  padding: 8px 10px;
+  color: #111827;
+}
+
+/* === Status / Alert ===================================================== */
+.brAlert {
+  background: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+  border-radius: 12px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+
+/* === Lista ============================================================== */
+.brList {
+  display: grid;
+  gap: 10px;
+}
+
+/* Skeletons */
+.brSkeletonList { display: grid; gap: 8px; }
+.brSkeleton {
+  height: 58px;
+  border-radius: 12px;
+  background: linear-gradient(90deg, #f3f4f6, #e5e7eb, #f3f4f6);
+  background-size: 200% 100%;
+  animation: brShimmer 1.3s infinite;
+}
+@keyframes brShimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Empty state */
+.brEmpty {
+  border: 1px dashed #e5e7eb;
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+  color: #6b7280;
+  background: #fafafa;
+}
+
+/* === Item ============================================================== */
+.brItem {
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 6px 18px rgba(17, 24, 39, 0.06);
+  overflow: hidden;
+}
+
+.brItemHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.brId {
+  font-weight: 800;
+  color: #111827;
+}
+.brTime {
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+/* Body */
+.brItemBody {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+}
+
+@media (min-width: 920px) {
+  .brItemBody {
+    grid-template-columns: 1fr 1fr 2fr;
+  }
+}
+
+.brCol {
+  display: grid;
+  gap: 10px;
+}
+
+.brRow {
+  display: grid;
+  grid-template-columns: 20px 1fr;
+  gap: 8px;
+  align-items: start;
+  color: #111827;
+}
+
+.brKv { display: grid; gap: 2px; }
+.brK  { font-size: 0.75rem; color: #6b7280; }
+.brV  { font-weight: 600; color: #111827; }
+
+/* Message column */
+.brMessage .brK {
+  margin-bottom: 4px;
+}
+.brMsgText {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 10px;
+  color: #1f2937;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* Footer / actions */
+.brItemFooter {
+  border-top: 1px solid #e5e7eb;
+  padding: 10px 12px;
+  background: #fff;
+}
+.brActionsRow {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* === Status badges ====================================================== */
+.brStatus {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.8rem;
+  line-height: 1.1;
+  border: 1px solid transparent;
+  color: #111827;
+  background: #f3f4f6;
+  border-color: #e5e7eb;
+}
+
+.brStatus--open {
+  background: #fff7ed;       /* orange-50 */
+  border-color: #fed7aa;     /* orange-200 */
+  color: #9a3412;            /* orange-800 */
+}
+.brStatus--handled {
+  background: #ecfeff;       /* cyan-50 */
+  border-color: #a5f3fc;     /* cyan-200 */
+  color: #0e7490;            /* cyan-700 */
+}
+.brStatus--converted_to_booking {
+  background: #ecfdf5;       /* emerald-50 */
+  border-color: #a7f3d0;     /* emerald-200 */
+  color: #065f46;            /* emerald-800 */
+}
+
+/* ————— Nya, kompletterande klasser ————— */
+
+.brMetaMuted {
+  opacity: 0.8;
+  font-style: italic;
+}
+
+.brDateRange {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.brDateField {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.875rem;
+}
+
+.brDateField > span {
+  opacity: 0.8;
+}
+
+.brDateField input[type="date"] {
+  height: 2rem;
+  padding: 0 0.5rem;
+  border: 1px solid rgba(0,0,0,0.1);
+  border-radius: 6px;
+}
+
+/* frivillig highlight för knappen "Markera som konverterad" om du vill särskilja den lite */
+.brActionsRow .brBtnMarkConverted {
+  /* ingen hård färg – behållar styles från .brBtnSecondary */
+}
+
+.brChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.brChip:hover {
+  filter: brightness(0.98);
+}
+
+.brRowCompact {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 12px;
+  border: 1px solid rgba(0,0,0,0.06);
+  border-radius: 8px;
+  background: #fff;
+  cursor: pointer;
+  transition: box-shadow .15s ease, background .15s ease;
+  margin-bottom: 8px;
+}
+.brRowCompact:hover { background: #fafafa; }
+.brCompactLeft { display: flex; gap: 8px; align-items: baseline; min-width: 0; }
+.brCompactName { font-weight: 600; }
+.brCompactSep { color: #9aa3af; }
+.brCompactReg { color: #374151; }
+.brCompactMsg {
+  color: #6b7280;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 46vw;
+}
+.brCompactRight { display: flex; gap: 10px; align-items: center; }
+.brExpandIcon { display: inline-flex; }
+
+.brCollapsible { overflow: hidden; transition: grid-template-rows .2s ease, opacity .2s ease; }
+.brCollapsible.closed { display: grid; grid-template-rows: 0fr; opacity: .0; }
+.brCollapsible.open   { display: grid; grid-template-rows: 1fr; opacity: 1; }
+.brCollapsible > * { min-height: 0; }
+
+.brChips { display: flex; flex-wrap: wrap; gap: 6px; }
+.brChip {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: var(--chip-bg, #f2f4f7);
+  color: var(--chip-fg, #1f2937);
+  font-size: 12px;
+  line-height: 1;
+  border: 1px solid rgba(0,0,0,0.06);
+  white-space: nowrap;
+}
+.brChip:hover { filter: brightness(0.98); }
+
+
+/* === Utilities ========================================================== */
+@media (max-width: 480px) {
+  .brHeader { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .brTabs { width: 100%; flex-wrap: wrap; }
+  .brSearch { padding: 8px 10px; }
+  .brDateRange { width: 100%; justify-content: space-between; }
+}
+

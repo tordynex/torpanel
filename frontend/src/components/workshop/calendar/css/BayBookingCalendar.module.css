@@ -1,0 +1,344 @@
+/* Theme tokens */
+.wrapper {
+  --radius: 8px;
+  --bg: #f9fafb;
+  --surface: #ffffff;
+  --border: #d1d5db; /* gray-300 */
+  --muted: #6b7280;  /* gray-500 */
+  --text: #1f2937;   /* gray-800 */
+  --brand: #ef5027;  /* autonexo orange */
+  --brand-hover: #d64420;
+  --ring: #fde5dd;
+
+  /* status base färger (återbrukas även för segment) */
+  --booked-bg: #fff7ed;
+  --booked-bd: #fdba74;
+  --booked-fg: #9a3412;
+
+  --inprog-bg: #ecfeff;
+  --inprog-bd: #67e8f9;
+  --inprog-fg: #155e75;
+
+  --done-bg: #f0fdf4;
+  --done-bd: #86efac;
+  --done-fg: #14532d;
+
+  --cancel-bg: #fef2f2;
+  --cancel-bd: #fecaca;
+  --cancel-fg: #7f1d1d;
+
+  --noshow-bg: #faf5ff;
+  --noshow-bd: #e9d5ff;
+  --noshow-fg: #581c87;
+
+  /* layout vars (JS sätter värden) */
+  --timeColWidth: 64px;
+  --dayHeaderH: 44px;
+  --rowH: 56px;
+
+  width: 100%;
+  height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Topbar */
+.topbar {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+.title {
+  font-weight: 700;
+  font-size: 18px;
+}
+.controls {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.selectLabel {
+  font-size: 14px;
+  color: var(--muted);
+}
+.select {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 12px;
+  background-color: #fff;
+  color: var(--text);
+  outline: none;
+}
+.select:focus {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px var(--ring);
+}
+
+/* Buttons */
+.btn {
+  appearance: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 14px;
+  transition: background-color .15s ease, color .15s ease, border-color .15s ease, box-shadow .15s ease, transform .03s ease;
+  user-select: none;
+}
+.btn:active { transform: translateY(1px); }
+.btnPrimary {
+  background-color: var(--brand);
+  color: #fff;
+  box-shadow: 0 6px 16px rgba(239, 80, 39, 0.18);
+}
+.btnPrimary:hover { background-color: var(--brand-hover); }
+.btnGhost {
+  background: transparent;
+  color: var(--brand);
+  border-color: var(--brand);
+  border: 1px solid var(--brand);
+}
+.btnGhost:hover {
+  background: var(--brand);
+  color: #fff;
+}
+
+/* Header (weekday row) */
+.headerGrid {
+  display: grid;
+  grid-template-columns: var(--timeColWidth) repeat(7, 1fr);
+  height: var(--dayHeaderH);
+  border-bottom: 1px solid var(--border);
+  background: #fbfbfb;
+}
+.headerTimeCol {
+  border-right: 1px solid var(--border);
+}
+.headerDay {
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  font-weight: 600;
+  color: var(--text);
+  border-right: 1px solid var(--border);
+}
+.headerDay:last-child { border-right: none; }
+.isToday { color: var(--brand); }
+
+/* Scroll area */
+.scrollArea {
+  position: relative;
+  width: 100%;
+  height: calc(100vh - (var(--dayHeaderH) + 60px));
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Grid body */
+.grid {
+  position: relative;
+  display: grid;
+  grid-template-columns: var(--timeColWidth) repeat(7, 1fr);
+  min-height: calc(var(--rowH) * 11); /* 7→18 default ≈ 11 rader */
+}
+.timeCol {
+  border-right: 1px solid var(--border);
+  position: relative;
+}
+.hourCell {
+  height: var(--rowH);
+  border-bottom: 1px dashed var(--border);
+  font-size: 12px;
+  color: var(--muted);
+  padding-right: 6px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+}
+.dayCol {
+  position: relative;
+  border-right: 1px solid var(--border);
+}
+.dayCol:last-child { border-right: none; }
+.hourCellBg {
+  height: var(--rowH);
+  border-bottom: 1px dashed var(--border);
+}
+
+/* Overlay for bookings */
+.overlayGrid {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: var(--timeColWidth) repeat(7, 1fr);
+}
+.overlayDay { position: relative; }
+
+/* Booking cards (bas) */
+.booking {
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  border-radius: 8px;
+  padding: 6px 8px;
+  pointer-events: auto;
+  box-shadow: 0 8px 18px rgba(0,0,0,.04);
+  border: 1px solid transparent;
+  background: #fff;
+  overflow: hidden; /* så segments klipper snyggt i kedjeläge */
+}
+
+.bookingHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  position: relative;
+  z-index: 2; /* ovanför segments */
+  pointer-events: auto;
+}
+.bookingTitle {
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.badge {
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background: #fff;
+}
+.bookingMeta {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 2px;
+  position: relative;
+  z-index: 2; /* ovanför segments */
+  pointer-events: auto;
+}
+
+/* Status färger (behåller din gamla look) */
+.status-booked { background: var(--booked-bg); border-color: var(--booked-bd); }
+.status-booked .badge { border-color: var(--booked-bd); color: var(--booked-fg); }
+
+.status-in_progress { background: var(--inprog-bg); border-color: var(--inprog-bd); }
+.status-in_progress .badge { border-color: var(--inprog-bd); color: var(--inprog-fg); }
+
+.status-completed { background: var(--done-bg); border-color: var(--done-bd); }
+.status-completed .badge { border-color: var(--done-bd); color: var(--done-fg); }
+
+.status-cancelled { background: var(--cancel-bg); border-color: var(--cancel-bd); }
+.status-cancelled .badge { border-color: var(--cancel-bd); color: var(--cancel-fg); }
+
+.status-no_show { background: var(--noshow-bg); border-color: var(--noshow-bd); }
+.status-no_show .badge { border-color: var(--noshow-bd); color: var(--noshow-fg); }
+
+/* ====== KEDJE-VIEW (yttre kort + inre bokade segment) ====== */
+
+/* Yttre kedje-kort: ser som vanlig bokning som default */
+.bookingChainBg {
+  /* behåll grundlooken: vit bakgrund + orange vänsterkant */
+  background: #fff;
+  position: absolute;
+  right: 6px;
+  left: 6px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* Endast om det finns FLERA segment → visa diskret “gap”-mönster */
+.bookingChainBg:has(.bookingSegment:nth-of-type(2)) {
+  background: repeating-linear-gradient(
+    180deg,
+    rgba(0,0,0,0.03),
+    rgba(0,0,0,0.03) 6px,
+    rgba(0,0,0,0.06) 6px,
+    rgba(0,0,0,0.06) 12px
+  );
+}
+
+/* Inre segment: verkligt bokade bitar, färg enligt status */
+.bookingSegment {
+  position: absolute;
+  left: 0;
+  right: 0;
+  border-radius: 8px;
+  z-index: 1;
+  pointer-events: none; /* klick går till yttre kortet */
+  /* lätt skugga så de poppar mot mönstret */
+  box-shadow: 0 4px 8px rgba(0,0,0,.05) inset, 0 1px 0 rgba(255,255,255,.5);
+}
+
+/* Segment-färger (matchar status-färgerna) */
+.bookingSegment.status-booked { background: var(--booked-bg); border-left: 4px solid var(--booked-bd); }
+.bookingSegment.status-in_progress { background: var(--inprog-bg); border-left: 4px solid var(--inprog-bd); }
+.bookingSegment.status-completed { background: var(--done-bg); border-left: 4px solid var(--done-bd); }
+.bookingSegment.status-cancelled { background: var(--cancel-bg); border-left: 4px solid var(--cancel-bd); }
+.bookingSegment.status-no_show { background: var(--noshow-bg); border-left: 4px solid var(--noshow-bd); }
+
+/* Footer */
+.footer {
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+  padding: 8px 12px;
+  font-size: 12px;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.footerStrong { color: var(--text); }
+.footerRight { margin-left: auto; }
+
+.infoBtn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--muted);
+  padding: 2px;
+  margin-left: auto;
+  transition: color 0.2s ease;
+}
+.infoBtn:hover { color: var(--brand); }
+
+.overlayDay {
+  position: relative;
+  cursor: crosshair;
+}
+
+.dragSelection {
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  background: rgba(239, 80, 39, 0.18);
+  border: 1px dashed #ef5027;
+  border-radius: 8px;
+  pointer-events: none;    /* ska inte blockera klick */
+}
+
+.overlayGrid {
+  pointer-events: auto;
+}
+
+/* Responsivt småskärmar */
+@media (max-width: 640px) {
+  .controls { gap: 6px; }
+  .select { max-width: 56vw; }
+}
+

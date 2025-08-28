@@ -1,0 +1,284 @@
+/* Theme tokens */
+.fill {
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
+}
+
+.wrapper {
+  --radius: 8px;
+  --bg: #f9fafb;
+  --surface: #ffffff;
+  --border: #d1d5db;
+  --muted: #6b7280;
+  --text: #1f2937;
+  --brand: #ef5027;
+  --brand-hover: #d64420;
+  --ring: #fde5dd;
+
+  --booked-bg: #fff7ed;
+  --booked-bd: #fdba74;
+  --booked-fg: #9a3412;
+
+  --inprog-bg: #ecfeff;
+  --inprog-bd: #67e8f9;
+  --inprog-fg: #155e75;
+
+  --done-bg: #f0fdf4;
+  --done-bd: #86efac;
+  --done-fg: #14532d;
+
+  --cancel-bg: #fef2f2;
+  --cancel-bd: #fecaca;
+  --cancel-fg: #7f1d1d;
+
+  --noshow-bg: #faf5ff;
+  --noshow-bd: #e9d5ff;
+  --noshow-fg: #581c87;
+
+  --vacation-bg: #fff7ed;
+  --vacation-bd: #fdba74;
+  --vacation-fg: #9a3412;
+
+  --sick-bg: #fef2f2;
+  --sick-bd: #fecaca;
+  --sick-fg: #7f1d1d;
+
+  --training-bg: #ecfeff;
+  --training-bd: #67e8f9;
+  --training-fg: #155e75;
+
+  --other-bg: #faf5ff;
+  --other-bd: #e9d5ff;
+  --other-fg: #581c87;
+
+  /* layout */
+  --timeColWidth: 64px;
+  --dayHeaderH: 44px;
+  --rowH: 56px;
+  --days: 7; /* kan sättas till 1 i mobile via inline style */
+
+  width: 100%;
+  min-width: 0;
+  flex: 1;
+  background: var(--bg);
+  color: var(--text);
+
+  display: flex;
+  flex-direction: column;
+}
+
+/* Topbar */
+.topbar {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+.title { font-weight: 700; font-size: 18px; }
+.controls { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+
+/* Buttons */
+.btn {
+  appearance: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 14px;
+  transition: background-color .15s ease, color .15s ease, border-color .15s ease, box-shadow .15s ease, transform .03s ease;
+  user-select: none;
+}
+.btn:active { transform: translateY(1px); }
+.btnPrimary { background-color: var(--brand); color: #fff; box-shadow: 0 6px 16px rgba(239, 80, 39, 0.18); }
+.btnPrimary:hover { background-color: var(--brand-hover); }
+.btnGhost { background: transparent; color: var(--brand); border: 1px solid var(--brand); }
+.btnGhost:hover { background: var(--brand); color: #fff; }
+
+/* Gör att grids alltid fyller hela bredden */
+.grid {
+  display: grid;
+  grid-template-columns: var(--timeColWidth) repeat(var(--days), 1fr);
+  width: 100%;          /* 👈 Viktigt */
+  flex: 1;              /* 👈 Om wrapper är flex child */
+}
+
+/* Header (weekday row) */
+.headerGrid {
+  display: grid;
+  grid-template-columns: var(--timeColWidth) repeat(var(--days), minmax(0, 1fr));
+  height: var(--dayHeaderH);
+  border-bottom: 1px solid var(--border);
+  background: #fbfbfb;
+}
+.headerTimeCol { border-right: 1px solid var(--border); }
+.headerDay {
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  font-weight: 600;
+  color: var(--text);
+  border-right: 1px solid var(--border);
+}
+.headerDay:last-child { border-right: none; }
+.isToday { color: var(--brand); }
+
+/* Scroll area */
+.scrollArea {
+  position: relative;
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Grid body */
+.grid {
+  position: relative;
+  display: grid;
+  grid-template-columns: var(--timeColWidth) repeat(var(--days), 1fr);
+  min-height: calc(var(--rowH) * 11);
+}
+.timeCol { border-right: 1px solid var(--border); position: relative; }
+.hourCell {
+  height: var(--rowH);
+  border-bottom: 1px dashed var(--border);
+  font-size: 12px;
+  color: var(--muted);
+  padding-right: 6px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+}
+.dayCol { position: relative; border-right: 1px solid var(--border); }
+.dayCol:last-child { border-right: none; }
+.hourCellBg { height: var(--rowH); border-bottom: 1px dashed var(--border); }
+
+/* Overlay for layers */
+.overlayGrid {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: var(--timeColWidth) repeat(var(--days), 1fr);
+}
+.overlayDay { position: relative; }
+
+/* ===== Working hours ===== */
+.workingBlock {
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  border-radius: 8px;
+  background: linear-gradient(180deg, rgba(16,185,129,0.08), rgba(16,185,129,0.06));
+  border: 1px dashed rgba(16,185,129,0.25);
+  pointer-events: none;
+}
+
+/* ===== Time off ===== */
+.timeOffBlock {
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background: #fff;
+  pointer-events: auto;
+  box-shadow: 0 8px 18px rgba(0,0,0,.04);
+}
+.timeOffInner { display: flex; align-items: center; gap: 6px; padding: 6px 8px; font-size: 12px; }
+.timeOffBadge { font-size: 11px; padding: 2px 6px; border-radius: 999px; border: 1px solid transparent; background: #fff; }
+.timeOffTime { color: var(--muted); }
+.timeOffReason { color: var(--muted); }
+
+.timeoff-vacation { background: var(--vacation-bg); border-color: var(--vacation-bd); }
+.timeoff-vacation .timeOffBadge { border-color: var(--vacation-bd); color: var(--vacation-fg); }
+.timeoff-sick { background: var(--sick-bg); border-color: var(--sick-bd); }
+.timeoff-sick .timeOffBadge { border-color: var(--sick-bd); color: var(--sick-fg); }
+.timeoff-training { background: var(--training-bg); border-color: var(--training-bd); }
+.timeoff-training .timeOffBadge { border-color: var(--training-bd); color: var(--training-fg); }
+.timeoff-other { background: var(--other-bg); border-color: var(--other-bd); }
+.timeoff-other .timeOffBadge { border-color: var(--other-bd); color: var(--other-fg); }
+
+/* ===== Booking cards ===== */
+.booking {
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  border-radius: 8px;
+  padding: 6px 8px;
+  pointer-events: auto;
+  box-shadow: 0 8px 18px rgba(0,0,0,.04);
+  border: 1px solid transparent;
+  background: #fff;
+  overflow: hidden;
+}
+.bookingHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  position: relative;
+  z-index: 2;
+  pointer-events: auto;
+}
+.bookingTitle {
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.badge { font-size: 11px; padding: 2px 6px; border-radius: 999px; border: 1px solid transparent; background: #fff; }
+.bookingMeta { font-size: 12px; color: var(--muted); margin-top: 2px; position: relative; z-index: 2; pointer-events: auto; }
+
+/* Status */
+.status-booked { background: var(--booked-bg); border-color: var(--booked-bd); }
+.status-booked .badge { border-color: var(--booked-bd); color: var(--booked-fg); }
+.status-in_progress { background: var(--inprog-bg); border-color: var(--inprog-bd); }
+.status-in_progress .badge { border-color: var(--inprog-bd); color: var(--inprog-fg); }
+.status-completed { background: var(--done-bg); border-color: var(--done-bd); }
+.status-completed .badge { border-color: var(--done-bd); color: var(--done-fg); }
+.status-cancelled { background: var(--cancel-bg); border-color: var(--cancel-bd); }
+.status-cancelled .badge { border-color: var(--cancel-bd); color: var(--cancel-fg); }
+.status-no_show { background: var(--noshow-bg); border-color: var(--noshow-bd); }
+.status-no_show .badge { border-color: var(--noshow-bd); color: var(--noshow-fg); }
+
+/* Footer */
+.footer {
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+  padding: 8px 12px;
+  font-size: 12px;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.footerStrong { color: var(--text); }
+.footerRight { margin-left: auto; }
+
+.infoBtn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--muted);
+  padding: 2px;
+  margin-left: auto;
+  transition: color 0.2s ease;
+}
+.infoBtn:hover { color: var(--brand); }
+
+/* Småskärm – inget extra behövs: vi går till 1 kolumn via --days:1 */
+@media (max-width: 640px) {
+  .controls { gap: 6px; }
+}

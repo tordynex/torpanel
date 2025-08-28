@@ -1,0 +1,108 @@
+.headerBar {
+display: flex;
+align-items: center;
+gap: 12px;
+padding: 8px 0 12px;
+}
+.brand { display: flex; align-items: center; gap: 10px; }
+.brandMark {
+width: 36px; height: 36px; border-radius: 10px;
+background: var(--brand);
+color: #fff; font-weight: 800; display: grid; place-items: center;
+box-shadow: 0 8px 18px rgba(239, 80, 39, .25);
+}
+.brandText { line-height: 1; }
+.brandTitle { font-weight: 900; letter-spacing: -0.02em; color: var(--text); }
+.brandSub { color: var(--muted); font-size: .85rem; margin-top: 2px; }
+.headerSpacer { flex: 1; }
+
+
+/* --------- Stepper --------- */
+.stepperWrap { margin: 8px 0 12px; }
+.stepper {
+display: grid;
+grid-template-columns: repeat(4, 1fr);
+gap: 8px;
+}
+.step {
+display: flex; align-items: center; gap: 10px;
+border: 1px solid var(--border); background: #fff; border-radius: 10px;
+padding: 10px 12px; cursor: pointer; text-align: left;
+transition: border-color .15s, box-shadow .15s, background-color .15s, transform .06s;
+}
+.step[aria-disabled="true"] { cursor: default; opacity: .7; }
+.step:hover { background: #fafafa; }
+.stepActive { box-shadow: var(--shadow); border-color: var(--brand); background: #fff; }
+.stepDone { background: #f8fafc; }
+.stepIcon { font-size: 1.2rem; color: var(--brand); display: grid; place-items: center; }
+.stepBody { display: grid; gap: 2px; min-width: 0; }
+.stepTitle { font-weight: 700; color: var(--text); font-size: .95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.stepSub { color: var(--muted); font-size: .8rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.logo {
+  display: flex;
+  align-items: center;
+}
+
+.logo img {
+  height: 40px;          /* gör loggan lagom liten */
+  width: auto;           /* behåller proportionerna */
+  object-fit: contain;   /* ser bra ut även om bilden har annan aspect */
+  display: block;
+}
+
+/* Progressbar */
+.progressBar { position: relative; height: 6px; background: #f3f4f6; border-radius: 999px; overflow: hidden; margin-top: 10px; }
+.progressFill { position: absolute; inset: 0 0 0 0; width: 0%; background: var(--brand); }
+
+
+/* --------- Shell / Card / Content --------- */
+.shell { max-width: 860px; margin: 2rem auto; padding: 0 1rem; }
+.card { position: relative; background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow); }
+.formHeader { margin-bottom: 10px; }
+.formTitle { margin: 0 0 .25rem 0; font-weight: 800; color: var(--text); font-size: 1.35rem; letter-spacing: -0.01em; }
+.formSubtitle { margin: 0; color: var(--muted); font-size: .95rem; }
+.content { margin-top: 6px; }
+
+
+/* --------- Action bar --------- */
+.actionSticky {
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(255,255,255,0) 0%,
+    rgba(255,255,255,.9) 24%,
+    #fff 60%
+  );
+  padding-top: 10px;
+  margin-top: 16px;
+
+  /* NYTT: luft under knapparna */
+  padding-bottom: 12px;
+}
+.actionInner {
+display: flex; align-items: center; justify-content: space-between; gap: 12px;
+}
+.actionLeft { display: flex; gap: 8px; }
+.actionRight { display: flex; gap: 8px; }
+
+
+/* Reuse global button styles if present; otherwise minimal fallbacks */
+.btn { appearance: none; border: 1px solid var(--border); background: #fff; color: var(--text); cursor: pointer; padding: .6rem 1.05rem; border-radius: 10px; font-weight: 700; font-size: .95rem; }
+.btnPrimary { background-color: var(--brand); color: #fff; border-color: var(--brand); }
+.btnPrimary:hover { background-color: var(--brand-hover); }
+.btnGhost { background-color: transparent; border-color: var(--brand); color: var(--brand); }
+.btnGhost:hover { background-color: var(--brand); color: #fff; }
+
+
+/* --------- Responsive --------- */
+@media (max-width: 720px) {
+.logo img {
+    height: 28px;
+  }
+.stepSub { display: none; }
+.stepper { grid-template-columns: 1fr 1fr; }
+}

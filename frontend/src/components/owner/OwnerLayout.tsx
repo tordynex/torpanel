@@ -34,16 +34,18 @@ export default function OwnerLayout() {
   const isActive = (path: string) =>
     location.pathname === path || location.pathname.startsWith(path + "/");
 
-  const handleLogout = () => {
-    try {
-      userService.logout?.(); // om din service har en logout
-    } finally {
-      localStorage.removeItem("token");
-      localStorage.removeItem("currentUser");
-      localStorage.removeItem("currentWorkshop");
-      navigate("/login", { replace: true });
+  const handleLogout = async () => {
+      try {
+        await userService.logout()
+      } catch (err) {
+        console.error("Logout error", err)
+      } finally {
+        localStorage.removeItem("token")
+        localStorage.removeItem("currentUser")
+        localStorage.removeItem("currentWorkshop")
+        navigate("/login", { replace: true })
+      }
     }
-  };
 
   return (
     <div className={styles.container}>

@@ -1,0 +1,179 @@
+/* Dashboard.module.css */
+
+/* =========================
+   Page-layout (i .content)
+   ========================= */
+.page {
+  /* fyll föräldern (som är flex och overflow:hidden) */
+  inline-size: 100%;
+  block-size: 100%;
+  min-height: 0;
+
+  /* kolumnlayout och inre spacing */
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  /* inre padding men fortfarande full-bleed i nya layouten */
+  padding: 16px;
+  box-sizing: border-box;
+
+  /* den här komponenten sköter scrollen */
+  overflow: auto;
+
+  color: #222;
+  background: #fff; /* eller transparent om du vill ärva */
+}
+
+/* Valfri variant om du vill köra kant-till-kant */
+.page--fullBleed {
+  padding: 0;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #222; /* samma som headerTitle */
+}
+
+.subtitle {
+  margin: 4px 0 0;
+  color: #6b7280; /* neutral text (grå) */
+  font-size: 0.95rem;
+}
+
+.wave {
+  display: inline-block;
+  transform-origin: 70% 70%;
+  animation: wave 2.2s infinite;
+}
+@keyframes wave {
+  10% { transform: rotate(14deg); }
+  20% { transform: rotate(-8deg); }
+  30% { transform: rotate(14deg); }
+  40% { transform: rotate(-4deg); }
+  50% { transform: rotate(10deg); }
+  60% { transform: rotate(0); }
+}
+
+/* Badge med accent-dot, passar bredvid rubrik */
+.badge {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  color: #1f2937;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ef5027;               /* accent */
+  box-shadow: 0 0 0 3px rgba(239,80,39,0.15);
+}
+
+.pulse {
+  animation: pulse 1.2s infinite;
+  background: #9ca3af; /* neutral grå när loading */
+  box-shadow: 0 0 0 3px rgba(156,163,175,0.15);
+}
+@keyframes pulse {
+  0% { opacity: .45; }
+  50% { opacity: 1; }
+  100% { opacity: .45; }
+}
+
+/* Kort-layout */
+.grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+.card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 6px 18px rgba(17, 24, 39, 0.06); /* subtil skugga */
+}
+
+.cardTitle {
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: #1f2937;
+}
+
+/* Skeletons i tema */
+.skeletonStack { display: grid; gap: 8px; }
+.skeleton {
+  height: 14px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #f3f4f6, #e5e7eb, #f3f4f6);
+  background-size: 200% 100%;
+  animation: shimmer 1.3s infinite;
+}
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Listor i kort */
+.list {
+  margin: 0;
+  padding-left: 16px;
+  color: #374151;
+}
+
+/* Buttons – primär accent + neutral sekundär */
+.actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.btn,
+.btnSecondary {
+  border-radius: 10px;
+  padding: 10px 12px;
+  cursor: pointer;
+  font-weight: 600;
+  border: 1px solid transparent;
+  background: transparent;
+  transition: transform .04s ease, box-shadow .2s, background-color .2s, color .2s, border-color .2s;
+}
+
+/* Primär = orange accent */
+.btn {
+  background: #ef5027;
+  color: #ffffff;
+  border-color: #ef5027;
+}
+.btn:hover {
+  filter: brightness(1.03);
+  box-shadow: 0 8px 24px rgba(239, 80, 39, 0.25);
+  transform: translateY(-1px);
+}
+.btn:active { transform: translateY(0); }
+
+/* Sekundär = ljus yta med accent hover */
+.btnSecondary {
+  background: #f9fafb;
+  color: #1f2937;
+  border-color: #e5e7eb;
+}
+.btnSecondary:hover {
+  background: #fff;
+  border-color: #ef5027;
+  color: #ef5027;
+}

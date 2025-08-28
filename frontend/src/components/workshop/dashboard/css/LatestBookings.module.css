@@ -1,0 +1,263 @@
+/* Följer ditt Dashboard-tema */
+
+/* Wrapper + header */
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cardTitle {
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.subtitle {
+  margin-top: 2px;
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+/* Listan */
+.list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 10px;
+}
+
+.item {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 12px;
+  align-items: center;
+
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 10px 12px;
+  transition: box-shadow .18s ease, transform .04s ease, border-color .18s ease;
+}
+
+.item:hover {
+  border-color: #ef5027;
+  box-shadow: 0 8px 24px rgba(239, 80, 39, 0.15);
+  transform: translateY(-1px);
+}
+
+/* Datum-”avatar” */
+.avatar {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+}
+
+.avatarDay {
+  font-weight: 800;
+  line-height: 1;
+  color: #1f2937;
+}
+.avatarMon {
+  font-size: 0.7rem;
+  color: #6b7280;
+}
+
+/* Textblock */
+.meta {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.titleRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: baseline;
+}
+
+.title {
+  font-weight: 700;
+  color: #111827;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-inline-size: 100%;
+}
+
+.subtle {
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.subRow {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  color: #374151;
+  font-size: 0.92rem;
+}
+
+.where,
+.when,
+.source { white-space: nowrap; }
+
+.dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #9ca3af;
+}
+
+/* Status chippar */
+.chip {
+  font-weight: 700;
+  font-size: 0.78rem;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background: #f9fafb;
+  color: #1f2937;
+  white-space: nowrap;
+}
+
+/* Färgvarianter (status) */
+.chip--booked {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+  color: #1d4ed8;
+}
+.chip--in_progress {
+  background: #fff7ed;
+  border-color: #fed7aa;
+  color: #c2410c;
+}
+.chip--completed {
+  background: #ecfdf5;
+  border-color: #a7f3d0;
+  color: #065f46;
+}
+.chip--cancelled {
+  background: #f3f4f6;
+  border-color: #e5e7eb;
+  color: #6b7280;
+}
+.chip--no_show {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #334155;
+}
+
+/* Skeleton loader */
+.skeletonStack { display: grid; gap: 10px; }
+
+.rowSkeleton {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 12px;
+  align-items: center;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 10px 12px;
+}
+
+.skAvatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: linear-gradient(90deg, #f3f4f6, #e5e7eb, #f3f4f6);
+  background-size: 200% 100%;
+  animation: shimmer 1.3s infinite;
+}
+
+.skCol { display: grid; gap: 6px; }
+.skLine, .skLineThin, .skChip {
+  height: 12px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #f3f4f6, #e5e7eb, #f3f4f6);
+  background-size: 200% 100%;
+  animation: shimmer 1.3s infinite;
+}
+.skLine { width: 60%; }
+.skLineThin { width: 40%; height: 10px; }
+.skChip { width: 70px; height: 26px; border-radius: 999px; }
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Tom-state + Error */
+.empty {
+  border: 1px dashed #e5e7eb;
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+  color: #374151;
+  display: grid;
+  gap: 6px;
+}
+.emptyIcon { font-size: 1.6rem; }
+.emptyTitle { font-weight: 700; color: #1f2937; }
+.emptyText { color: #6b7280; }
+
+.errorBox {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid #fecaca;
+  background: #fff1f2;
+  color: #7f1d1d;
+  border-radius: 12px;
+  padding: 10px 12px;
+}
+
+/* Buttons enligt tema */
+.btn,
+.btnSecondary {
+  border-radius: 10px;
+  padding: 10px 12px;
+  cursor: pointer;
+  font-weight: 600;
+  border: 1px solid transparent;
+  background: transparent;
+  transition: transform .04s ease, box-shadow .2s, background-color .2s, color .2s, border-color .2s;
+}
+
+/* Primär = orange accent */
+.btn {
+  background: #ef5027;
+  color: #ffffff;
+  border-color: #ef5027;
+}
+.btn:hover {
+  filter: brightness(1.03);
+  box-shadow: 0 8px 24px rgba(239, 80, 39, 0.25);
+  transform: translateY(-1px);
+}
+.btn:active { transform: translateY(0); }
+
+/* Sekundär (neutral) */
+.btnSecondary {
+  background: #f9fafb;
+  color: #1f2937;
+  border-color: #e5e7eb;
+}
+.btnSecondary:hover {
+  background: #fff;
+  border-color: #ef5027;
+  color: #ef5027;
+}
