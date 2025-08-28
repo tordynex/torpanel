@@ -14,11 +14,47 @@ if "autonexo" not in cols:
         conn.execute(text("ALTER TABLE workshops ADD COLUMN autonexo boolean NOT NULL DEFAULT true;"))
         conn.execute(text("ALTER TABLE workshops ALTER COLUMN autonexo DROP DEFAULT;"))
 
-print("Normaliserar användarroller till gemener...")
+# ---- FIX FÖR USER ROLE (ENUM + lowercase) ----
+print("Normaliserar användarroller + säkerställer ENUM-typ...")
+
 with engine.begin() as conn:
+    # 1) Skapa enum-typen om den saknas
     conn.execute(text("""
-        UPDATE users
-        SET role = LOWER(role)
-        WHERE role IS NOT NULL AND role <> LOWER(role);
+    DO $$
+    BEGIN
+      IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'userrole') THEN
+        CREATE TYPE userrole AS ENUM ('owner','workshop_user','workshop_employee');
+      END IF;
+    END$$;
     """))
+
+    # 2) Sänk värden till gemener (fungerar både om kolumnen är text eller enum)
+    conn.execute(text("""
+    UPDATE users
+    SET role = LOWER(role::text)
+    WHERE role IS NOT NULL AND role::text <> LOWER(role::text);
+    """))
+
+    # 3) Om kolumnen INTE är av enum-typen -> casta om den
+    conn.execute(text("""
+    DO $$
+    BEGIN
+      IF EXISTS (
+        SELECT 1
+        FROM information_schema.columns
+        WHERE table_name='users' AND column_name='role' AND udt_name <> 'userrole'
+      ) THEN
+        ALTER TABLE users
+          ALTER COLUMN role TYPE userrole
+          USING LOWER(role::text)::userrole;
+      END IF;
+    END$$;
+    """))
+
+    # 4) Sätt default till enum-värdet (igen, ifall tabellen var gammal)
+    conn.execute(text("""
+    ALTER TABLE users
+      ALTER COLUMN role SET DEFAULT 'workshop_user'::userrole;
+    """))
+
 print("Färdig.")
