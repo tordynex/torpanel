@@ -336,7 +336,7 @@ def reset_password(payload: dict, db: Session = Depends(get_db)):
 
     return {"message": "Lösenord uppdaterat."}
 
-@router.post("/users/{user_id}/working-hours", response_model=schemas.UserWorkingHoursRead)
+@router.post("/{user_id}/working-hours", response_model=schemas.UserWorkingHoursRead)
 def create_working_hours(
     user_id: int,
     payload: schemas.UserWorkingHoursCreate,
@@ -363,7 +363,7 @@ def create_working_hours(
     return wh
 
 
-@router.get("/users/{user_id}/working-hours", response_model=List[schemas.UserWorkingHoursRead])
+@router.get("/{user_id}/working-hours", response_model=List[schemas.UserWorkingHoursRead])
 def list_working_hours(user_id: int, db: Session = Depends(get_db)):
     user = _get_user_or_404(db, user_id)
     _assert_user_can_have_schedule(user)
@@ -416,7 +416,7 @@ def delete_working_hours(wh_id: int, db: Session = Depends(get_db)):
 # USER TIME OFF (semester/sjuk)
 # ----------------------------
 
-@router.post("/users/{user_id}/time-off", response_model=schemas.UserTimeOffRead)
+@router.post("/{user_id}/time-off", response_model=schemas.UserTimeOffRead)
 def create_time_off(
     user_id: int,
     payload: schemas.UserTimeOffCreate,
@@ -445,7 +445,7 @@ def create_time_off(
     db.refresh(to)
     return to
 
-@router.get("/users/{user_id}/time-off", response_model=List[schemas.UserTimeOffRead])
+@router.get("/{user_id}/time-off", response_model=List[schemas.UserTimeOffRead])
 def list_time_off(user_id: int, db: Session = Depends(get_db)):
     user = _get_user_or_404(db, user_id)
     _assert_user_can_have_schedule(user)
@@ -491,7 +491,7 @@ def delete_time_off(to_id: int, db: Session = Depends(get_db)):
     db.commit()
     return
 
-@router.post("/users/{user_id}/working-hours/preset/office", response_model=List[schemas.UserWorkingHoursRead])
+@router.post("/{user_id}/working-hours/preset/office", response_model=List[schemas.UserWorkingHoursRead])
 def set_office_hours(user_id: int, db: Session = Depends(get_db)):
     user = _get_user_or_404(db, user_id)
     _assert_user_can_have_schedule(user)
@@ -512,7 +512,7 @@ def set_office_hours(user_id: int, db: Session = Depends(get_db)):
         db.refresh(it)
     return items
 
-@router.post("/users/{user_id}/working-hours/preset/with-lunch",
+@router.post("/{user_id}/working-hours/preset/with-lunch",
              response_model=List[schemas.UserWorkingHoursRead])
 def set_office_hours_with_lunch(
     user_id: int,
