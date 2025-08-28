@@ -3,7 +3,7 @@ from sqlalchemy import (
     select, UniqueConstraint, Index, CheckConstraint, Time, func
 )
 from sqlalchemy import Enum as SAEnum
-from sqlalchemy.orm import relationship, declarative_base, column_property
+from sqlalchemy.orm import relationship, declarative_base, column_property, validates
 import enum
 from sqlalchemy.dialects.postgresql import ExcludeConstraint
 from sqlalchemy.ext.associationproxy import association_proxy
@@ -94,6 +94,16 @@ class User(Base):
         nullable=False,
         server_default=UserRole.WORKSHOP_USER.value,
     )
+
+    @validates("role")
+    def _normalize_role(self, key, value):
+        # Tillåt strängar eller enum; normalisera till lower
+        if isinstance(value, str):
+            value = value.lower()
+            return UserRole(value)
+        if isinstance(value, UserRole):
+            return value
+        raise ValueError("Ogiltig role")
 
 
 

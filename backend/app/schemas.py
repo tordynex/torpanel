@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, Field, validator, ConfigDict, model_validator
+from pydantic import BaseModel, EmailStr, Field, validator, ConfigDict, model_validator, field_validator
 from typing import Optional, List
 from datetime import date, datetime, time
 
@@ -21,6 +21,11 @@ class UserBase(BaseModel):
 class UserCreate(UserBase):
     password: str
     workshop_ids: Optional[List[int]] = []
+
+    @field_validator("role")
+    @classmethod
+    def _role_lower(cls, v: UserRole | str):
+        return v.value if isinstance(v, UserRole) else v.lower()
 
 class UserSimple(BaseModel):
     id: int

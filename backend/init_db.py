@@ -1,3 +1,4 @@
+# init_db.py
 from sqlalchemy import text, inspect
 from app.database import engine
 from app.models import Base
@@ -12,4 +13,12 @@ if "autonexo" not in cols:
     with engine.begin() as conn:
         conn.execute(text("ALTER TABLE workshops ADD COLUMN autonexo boolean NOT NULL DEFAULT true;"))
         conn.execute(text("ALTER TABLE workshops ALTER COLUMN autonexo DROP DEFAULT;"))
+
+print("Normaliserar användarroller till gemener...")
+with engine.begin() as conn:
+    conn.execute(text("""
+        UPDATE users
+        SET role = LOWER(role)
+        WHERE role IS NOT NULL AND role <> LOWER(role);
+    """))
 print("Färdig.")
