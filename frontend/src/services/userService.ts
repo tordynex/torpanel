@@ -154,7 +154,7 @@ export interface UserScheduleResponse {
 }
 
 /** Axios-instans med token-injektion */
-const client = client.create({
+const client = axios.create({
   baseURL: USER_ENDPOINT,
 })
 
@@ -182,26 +182,26 @@ client.interceptors.response.use(
 
 /** Users */
 export const fetchUsers = async () => {
-  const { data } = await client.get(`${USER_ENDPOINT}/all`)
+  const { data } = await client.get(`/all`)
   return data
 }
 
 export const fetchCurrentUser = async () => {
-  const { data } = await client.get(`${USER_ENDPOINT}/me`)
+  const { data } = await client.get(`/me`)
   return data
 }
 
 export const createUser = async (payload: UserCreate) => {
-  const { data } = await client.post(`${USER_ENDPOINT}/create`, payload)
+  const { data } = await client.post(`/create`, payload)
   return data
 }
 
 export const deleteUser = async (userId: number) => {
-  await client.delete(`${USER_ENDPOINT}/delete/${userId}`)
+  await client.delete(`/delete/${userId}`)
 }
 
 export const updateUser = async (userId: number, payload: UserUpdate) => {
-  const { data } = await client.put(`${USER_ENDPOINT}/edit/${userId}`, payload)
+  const { data } = await client.put(`/edit/${userId}`, payload)
   return data
 }
 
@@ -211,7 +211,7 @@ export const login = async (email: string, password: string): Promise<LoginRespo
   params.append("username", email)
   params.append("password", password)
 
-  const { data } = await client.post(`${USER_ENDPOINT}/login`, params, {
+  const { data } = await client.post(`/login`, params, {
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
   })
 
@@ -220,7 +220,7 @@ export const login = async (email: string, password: string): Promise<LoginRespo
 
 export const logout = async () => {
   try {
-    await client.post(`${USER_ENDPOINT}/logout`)
+    await client.post(`/logout`)
   } finally {
     localStorage.removeItem("currentUser")
     localStorage.removeItem("currentWorkshop")
@@ -229,51 +229,51 @@ export const logout = async () => {
 
 /** Lösenordsflöde */
 export const requestPasswordReset = async (email: string) => {
-  await client.post(`${USER_ENDPOINT}/reset-password-request`, { email })
+  await client.post(`/reset-password-request`, { email })
 }
 
 export const resetPassword = async (token: string, newPassword: string) => {
-  await client.post(`${USER_ENDPOINT}/reset-password`, { token, new_password: newPassword })
+  await client.post(`/reset-password`, { token, new_password: newPassword })
 }
 
 // --- Nytt: services för arbetstider ---
 export const createWorkingHours = async (userId: number, payload: UserWorkingHoursCreate) => {
-  const { data } = await client.post(`${USER_ENDPOINT}/users/${userId}/working-hours`, payload)
+  const { data } = await client.post(`/${userId}/working-hours`, payload)
   return data
 }
 
 export const listWorkingHours = async (userId: number) => {
-  const { data } = await client.get(`${USER_ENDPOINT}/users/${userId}/working-hours`)
+  const { data } = await client.get(`/${userId}/working-hours`)
   return data
 }
 
 export const updateWorkingHours = async (workingHoursId: number, payload: UserWorkingHoursUpdate) => {
-  const { data } = await client.patch(`${USER_ENDPOINT}/working-hours/${workingHoursId}`, payload)
+  const { data } = await client.patch(`/working-hours/${workingHoursId}`, payload)
   return data
 }
 
 export const deleteWorkingHours = async (workingHoursId: number) => {
-  await client.delete(`${USER_ENDPOINT}/working-hours/${workingHoursId}`)
+  await client.delete(`/working-hours/${workingHoursId}`)
 }
 export const setOfficeHours = async (userId: number) => {
-  const { data } = await client.post(`${USER_ENDPOINT}/users/${userId}/working-hours/preset/office`)
+  const { data } = await client.post(`/${userId}/working-hours/preset/office`)
   return data
 }
 
 export const createTimeOff = async (userId: number, payload: UserTimeOffCreate) => {
-  const { data } = await client.post(`${USER_ENDPOINT}/users/${userId}/time-off`, payload)
+  const { data } = await client.post(`/${userId}/time-off`, payload)
   return data
 }
 export const listTimeOff = async (userId: number) => {
-  const { data } = await client.get(`${USER_ENDPOINT}/users/${userId}/time-off`)
+  const { data } = await client.get(`/${userId}/time-off`)
   return data
 }
 export const updateTimeOff = async (timeOffId: number, payload: UserTimeOffUpdate) => {
-  const { data } = await client.patch(`${USER_ENDPOINT}/time-off/${timeOffId}`, payload)
+  const { data } = await client.patch(`/time-off/${timeOffId}`, payload)
   return data
 }
 export const deleteTimeOff = async (timeOffId: number) => {
-  await client.delete(`${USER_ENDPOINT}/time-off/${timeOffId}`)
+  await client.delete(`/time-off/${timeOffId}`)
 }
 
 export const setWorkingHoursWithLunch = async (
@@ -281,7 +281,7 @@ export const setWorkingHoursWithLunch = async (
   payload: LunchPresetRequest = {}
 ) => {
   const { data } = await client.post(
-    `${USER_ENDPOINT}/users/${userId}/working-hours/preset/with-lunch`,
+    `/${userId}/working-hours/preset/with-lunch`,
     payload
   )
   return data
@@ -292,7 +292,7 @@ export const listUserBookingsWindow = async (
   dateFromISO: string,
   dateToISO: string
 ): Promise<BayBookingRead[]> => {
-  const { data } = await client.get(`${USER_ENDPOINT}/${userId}/bookings`, {
+  const { data } = await client.get(`/${userId}/bookings`, {
     params: {
       date_from: dateFromISO,
       date_to: dateToISO,
@@ -316,7 +316,7 @@ export const getUserScheduleWindow = async (args: {
   tz?: string        // default "Europe/Stockholm"
 }): Promise<UserScheduleResponse> => {
   const { userId, dayFrom, dayTo, includeBookings = false, tz = "Europe/Stockholm" } = args
-  const { data } = await client.get(`${USER_ENDPOINT}/${userId}/schedule`, {
+  const { data } = await client.get(`/${userId}/schedule`, {
     params: {
       day_from: dayFrom,
       day_to: dayTo,
