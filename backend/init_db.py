@@ -37,24 +37,16 @@ with engine.begin() as conn:
 
         -- Gamla varianten med VERSALER? Migrera till gemener.
         IF has_upper AND NOT has_lower THEN
-          -- ta bort default så vi kan byta typ
           ALTER TABLE users ALTER COLUMN role DROP DEFAULT;
-          -- gör kolumnen till text
           ALTER TABLE users ALTER COLUMN role TYPE text USING role::text;
-          -- släng gamla enum
           DROP TYPE userrole;
-          -- skapa rätt enum
           CREATE TYPE userrole AS ENUM ('owner','workshop_user','workshop_employee');
-          -- normalisera data
           UPDATE users SET role = lower(role);
-          -- casta tillbaka till enum
           ALTER TABLE users ALTER COLUMN role TYPE userrole USING role::userrole;
-          -- sätt default igen
           ALTER TABLE users ALTER COLUMN role SET DEFAULT 'workshop_user'::userrole;
         END IF;
 
       ELSE
-        -- Typen fanns inte: skapa den och försök casta kolumnen om den finns
         CREATE TYPE userrole AS ENUM ('owner','workshop_user','workshop_employee');
         BEGIN
           ALTER TABLE users ALTER COLUMN role TYPE userrole USING lower(role)::userrole;
@@ -66,7 +58,7 @@ with engine.begin() as conn:
     END $$;
     """))
 
-# --- NYTT: customers.workshop_id (skapa/backfilla/index/FK/unique) ---
+# --- customers.workshop_id (från tidigare svar) ---
 print("Säkerställer customers.workshop_id + relationer...")
 with engine.begin() as conn:
     # 1) Lägg till kolumnen om saknas (nullable först)
@@ -82,8 +74,7 @@ with engine.begin() as conn:
     END$$;
     """))
 
-    # 2) Backfilla från baybookings (försök gissa verkstad per kund)
-    #    Använder minsta workshop_id för varje kund som synts i bokningar.
+    # 2) Backfilla från baybookings
     conn.execute(text("""
     WITH guess AS (
       SELECT customer_id, MIN(workshop_id) AS workshop_id
@@ -97,7 +88,7 @@ with engine.begin() as conn:
     WHERE c.id = g.customer_id AND c.workshop_id IS NULL;
     """))
 
-    # 3) Index på customers.workshop_id om saknas
+    # 3) Index
     conn.execute(text("""
     DO $$
     BEGIN
@@ -111,7 +102,7 @@ with engine.begin() as conn:
     END$$;
     """))
 
-    # 4) UQ-constraints (verkstad+email / verkstad+phone) om saknas
+    # 4) Unika constraints
     conn.execute(text("""
     DO $$
     BEGIN
@@ -133,7 +124,7 @@ with engine.begin() as conn:
     END$$;
     """))
 
-    # 5) Uträtta FK om saknas
+    # 5) FK
     conn.execute(text("""
     DO $$
     BEGIN
@@ -152,9 +143,95 @@ with engine.begin() as conn:
     END$$;
     """))
 
-    # (Valfritt) Om du längre fram vill göra NOT NULL:
-    # Se till att allt är fyllt först, kör sen i separat deploy:
-    # ALTER TABLE customers ALTER COLUMN workshop_id SET NOT NULL;
+# --- NYTT: servicetasks – lägg till nya kolumner + index + FK ---
+print("Säkerställer nya kolumner i servicetasks...")
+with engine.begin() as conn:
+    # Katalog-kolumn
+    conn.execute(text("""
+    DO $$
+    BEGIN
+      IF NOT EXISTS (
+        SELECT 1 FROM information_schema.columns
+        WHERE table_name='servicetasks' AND column_name='catalog_item_id'
+      ) THEN
+        ALTER TABLE servicetasks ADD COLUMN catalog_item_id integer NULL;
+      END IF;
+    END$$;
+    """))
+
+    # Hours, quantity
+    conn.execute(text("""
+    DO $$
+    BEGIN
+      IF NOT EXISTS (
+        SELECT 1 FROM information_schema.columns
+        WHERE table_name='servicetasks' AND column_name='hours'
+      ) THEN
+        ALTER TABLE servicetasks ADD COLUMN hours double precision NULL;
+      END IF;
+
+      IF NOT EXISTS (
+        SELECT 1 FROM information_schema.columns
+        WHERE table_name='servicetasks' AND column_name='quantity'
+      ) THEN
+        ALTER TABLE servicetasks ADD COLUMN quantity double precision NULL;
+      END IF;
+    END$$;
+    """))
+
+    # unit_price_ore, line_total_ore
+    conn.execute(text("""
+    DO $$
+    BEGIN
+      IF NOT EXISTS (
+        SELECT 1 FROM information_schema.columns
+        WHERE table_name='servicetasks' AND column_name='unit_price_ore'
+      ) THEN
+        ALTER TABLE servicetasks ADD COLUMN unit_price_ore integer NULL;
+      END IF;
+
+      IF NOT EXISTS (
+        SELECT 1 FROM information_schema.columns
+        WHERE table_name='servicetasks' AND column_name='line_total_ore'
+      ) THEN
+        ALTER TABLE servicetasks ADD COLUMN line_total_ore integer NULL;
+      END IF;
+    END$$;
+    """))
+
+    # Index på catalog_item_id
+    conn.execute(text("""
+    DO $$
+    BEGIN
+      IF NOT EXISTS (
+        SELECT 1 FROM pg_class c
+        JOIN pg_namespace n ON n.oid = c.relnamespace
+        WHERE c.relkind='i' AND c.relname='ix_servicetasks_catalog_item'
+      ) THEN
+        CREATE INDEX ix_servicetasks_catalog_item ON servicetasks (catalog_item_id);
+      END IF;
+    END$$;
+    """))
+
+    # FK -> workshop_service_items(id)
+    conn.execute(text("""
+    DO $$
+    BEGIN
+      IF NOT EXISTS (
+        SELECT 1
+        FROM information_schema.table_constraints
+        WHERE table_name='servicetasks'
+          AND constraint_type='FOREIGN KEY'
+          AND constraint_name='fk_servicetasks_catalog_item'
+      ) THEN
+        ALTER TABLE servicetasks
+          ADD CONSTRAINT fk_servicetasks_catalog_item
+          FOREIGN KEY (catalog_item_id)
+          REFERENCES workshop_service_items(id)
+          ON DELETE SET NULL;
+      END IF;
+    END$$;
+    """))
 
 # --- Övriga normaliseringar (oförändrade) ---
 with engine.begin() as conn:
