@@ -256,7 +256,31 @@ const SimpleBookingForm: React.FC<Props> = ({
 
   const normalizeReg = (s: string) => s.toUpperCase().replace(/\s+/g, "");
   const normalizeEmail = (s: string) => s.trim().toLowerCase();
-  const normalizePhone = (s: string) => s.replace(/\s|-/g, "");
+  const normalizePhoneSE = (raw: string) => {
+      if (!raw) return "";
+      const cleaned = raw.replace(/[^\d+]/g, "");
+
+      // Tillåt andra landskoder orörda (ta bort detta block om du vill tvinga +46)
+      if (cleaned.startsWith("+") && !cleaned.startsWith("+46")) {
+        return cleaned;
+      }
+
+      if (cleaned.startsWith("+46")) {
+        const rest = cleaned.slice(3).replace(/^0+/, "");
+        return "+46" + rest;
+      }
+
+      if (cleaned.startsWith("0")) {
+        return "+46" + cleaned.replace(/^0+/, "");
+      }
+
+      if (/^\d+$/.test(cleaned)) {
+        return "+46" + cleaned.replace(/^0+/, "");
+      }
+
+      return cleaned;
+    };
+
 
   const openPreviewForCar = (car: Car) => {
     setErrorPreview(null);
@@ -364,7 +388,7 @@ const SimpleBookingForm: React.FC<Props> = ({
           first_name: c.first_name || undefined,
           last_name: c.last_name || undefined,
           email: c.email || undefined,
-          phone: c.phone || undefined,
+          phone: c.phone ? normalizePhoneSE(c.phone) : undefined,
           car_id: confirmedCar.id,
           set_primary: true,
         } as const;
@@ -403,7 +427,7 @@ const SimpleBookingForm: React.FC<Props> = ({
         first_name: custFirst || undefined,
         last_name: custLast || undefined,
         email: custEmail ? normalizeEmail(custEmail) : undefined,
-        phone: custPhone ? normalizePhone(custPhone) : undefined,
+        phone: custPhone ? normalizePhoneSE(custPhone) : undefined,
         registration_number: confirmedCar.registration_number,
         set_primary: custSetPrimary,
       });
@@ -891,6 +915,7 @@ const SimpleBookingForm: React.FC<Props> = ({
                                   type="tel"
                                   value={custPhone}
                                   onChange={(e) => setCustPhone(e.target.value)}
+                                  onBlur={() => setCustPhone(normalizePhoneSE(custPhone))} // <= nytt
                                   placeholder="+4670…"
                                   autoComplete="tel"
                                 />

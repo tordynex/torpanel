@@ -31,6 +31,39 @@ import {
 const normalizeReg = (v: string) =>
   v.toUpperCase().replace(/\s+/g, "").replace(/[^A-Z0-9ÅÄÖ]/gi, "").slice(0, 10);
 
+// +46-normalisering för svenska nummer
+const normalizePhoneSE = (raw: string) => {
+  if (!raw) return "";
+
+  // Ta bort mellanslag, bindestreck, parenteser etc – behåll ev. ledande +
+  const cleaned = raw.replace(/[^\d+]/g, "");
+
+  // Om annat landsnummer än +46: låt vara (ändra detta om du vill *tvinga* +46)
+  if (cleaned.startsWith("+") && !cleaned.startsWith("+46")) {
+    return cleaned;
+  }
+
+  // Fall 1: redan +46 – ta bort ledande nollor efter landskoden
+  if (cleaned.startsWith("+46")) {
+    const rest = cleaned.slice(3).replace(/^0+/, "");
+    return "+46" + rest;
+  }
+
+  // Fall 2: börjar med 0 (svenskt inrikesformat), byt ut mot +46
+  if (cleaned.startsWith("0")) {
+    const withoutZero = cleaned.replace(/^0+/, "");
+    return "+46" + withoutZero;
+  }
+
+  // Fall 3: bara siffror utan prefix – anta svenskt nummer
+  if (/^\d+$/.test(cleaned)) {
+    return "+46" + cleaned.replace(/^0+/, "");
+  }
+
+  // Annars: returnera som det är
+  return cleaned;
+};
+
 const currentYear = new Date().getFullYear();
 const STEP1_KEY = "autonexo.booking.step1";
 
@@ -71,7 +104,12 @@ export default function RegistreringsnummerPage() {
   // Validation
   const regValid = useMemo(() => normalizeReg(reg).length >= 3, [reg]);
   const emailOk = useMemo(() => !email || /.+@.+\..+/.test(email), [email]);
-  const phoneOk = useMemo(() => !phone || /^(\+)?[0-9\s-]{6,}$/.test(phone), [phone]);
+  const normalizedPhone = useMemo(() => normalizePhoneSE(phone), [phone]);
+    const phoneOk = useMemo(() => {
+      if (!phone) return true;          // tomt är ok (eftersom e-post också kan anges)
+      // enkelt rimlighetstest: ska börja med + och vara minst 8–10 tecken
+      return /^\+\d{8,15}$/.test(normalizedPhone);
+    }, [phone, normalizedPhone]);
   const hasContact = useMemo(() => {
     const hasOne = (email && emailOk) || (phone && phoneOk);
     return hasOne && emailOk && phoneOk;
@@ -143,25 +181,27 @@ export default function RegistreringsnummerPage() {
   };
 
   const handleNext = async () => {
-  if (!car?.id) return;
-  setSaving(true);
-  setSaveError(null);
-  try {
-    const regNr = normalizeReg(reg);
+      if (!car?.id) return;
+      setSaving(true);
+      setSaveError(null);
+      try {
+        const regNr = normalizeReg(reg);
+        const phoneForSave = normalizePhoneSE(phone); // <= viktigt
 
-    saveStep1({
-      reg: regNr,
-      car,
-      contact: { firstName, lastName, email, phone },
-    });
+        saveStep1({
+          reg: regNr,
+          car,
+          contact: { firstName, lastName, email, phone: phoneForSave },
+        });
 
-    navigate(`/boka/hitta-verkstad?carId=${encodeURIComponent(String(car.id))}`);
-  } catch (e) {
-    setSaveError("Kunde inte förbereda nästa steg. Försök igen.");
-  } finally {
-    setSaving(false);
-  }
-};
+        navigate(`/boka/hitta-verkstad?carId=${encodeURIComponent(String(car.id))}`);
+      } catch (e) {
+        setSaveError("Kunde inte förbereda nästa steg. Försök igen.");
+      } finally {
+        setSaving(false);
+      }
+    };
+
 
   return (
       <BookingLayout
@@ -386,19 +426,20 @@ export default function RegistreringsnummerPage() {
                     <FiPhone aria-hidden className={styles.labelIcon} /> Telefon
                   </label>
                   <input
-                    id="phone"
-                    type="tel"
-                    inputMode="tel"
-                    enterKeyHint="done"
-                    className={[
-                      styles.input,
-                      !phoneOk && phone ? styles.inputError : "",
-                    ].join(" ")}
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    placeholder="+4670…"
-                    autoComplete="tel"
-                  />
+                  id="phone"
+                  type="tel"
+                  inputMode="tel"
+                  enterKeyHint="done"
+                  className={[
+                    styles.input,
+                    !phoneOk && phone ? styles.inputError : "",
+                  ].join(" ")}
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  onBlur={() => setPhone(normalizedPhone)}   // <= auto-formatering här
+                  placeholder="+4670…"
+                  autoComplete="tel"
+                />
                 </div>
               </div>
 
