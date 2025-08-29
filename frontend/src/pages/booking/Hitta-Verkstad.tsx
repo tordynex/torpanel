@@ -57,21 +57,25 @@ export default function HittaVerkstadPage() {
 
   // Hämta verkstäder
   useEffect(() => {
-    let mounted = true;
-    (async () => {
-      setError(null);
-      setLoading(true);
-      try {
-        const list = await fetchWorkshops();
-        if (mounted) setWorkshops(list ?? []);
-      } catch (e: any) {
-        if (mounted) setError("Kunde inte hämta verkstäder just nu. Försök igen strax.");
-      } finally {
-        if (mounted) setLoading(false);
-      }
-    })();
-    return () => { mounted = false; };
-  }, []);
+      let mounted = true;
+      (async () => {
+        setError(null);
+        setLoading(true);
+        try {
+          const list = await fetchWorkshops();
+          if (mounted) {
+            const onlyAutonexo = (list ?? []).filter(w => w.autonexo);
+            setWorkshops(onlyAutonexo);
+          }
+        } catch (e: any) {
+          if (mounted) setError("Kunde inte hämta verkstäder just nu. Försök igen strax.");
+        } finally {
+          if (mounted) setLoading(false);
+        }
+      })();
+      return () => { mounted = false; };
+    }, []);
+
 
   // Filtrering
   const filtered = useMemo(() => {
