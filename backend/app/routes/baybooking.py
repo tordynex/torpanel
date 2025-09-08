@@ -9,10 +9,6 @@ from app.database import get_db
 
 router = APIRouter()
 
-def _overlap_clause(col_start, col_end, q_from, q_to):
-    # [col_start, col_end) överlappar [q_from, q_to)
-    return (col_start < q_to) & (col_end > q_from)
-
 # -----------------------------
 # Hjälpfunktioner / valideringar
 # -----------------------------
@@ -192,7 +188,7 @@ def list_bookings(
     include_cancelled: bool = Query(default=True, description="Ta med CANCELLED och NO_SHOW i resultatet"),
     db: Session = Depends(get_db),
 ):
-    # Eager load så Pydantic kan serialisera nested objekt utan extra queries
+    # Eager load
     q = (
         db.query(models.BayBooking)
         .options(
@@ -228,9 +224,10 @@ def list_bookings(
 
     bookings = q.order_by(models.BayBooking.start_at.asc()).all()
 
-    # ---- NYTT: batcha fram primärkund per bil OCH per verkstad ----
+    # ---- Primärkund per bil OCH verkstad ----
     car_ids = [b.car_id for b in bookings if b.car_id is not None]
-    primary_by_pair = {}  # key = (car_id, workshop_id) -> Customer
+    primary_by_pair: dict[tuple[int, int], models.Customer] = {}
+
     if car_ids:
         today = date.today()
         rows = (
@@ -239,12 +236,9 @@ def list_bookings(
             .filter(
                 models.CustomerCar.car_id.in_(car_ids),
                 models.CustomerCar.is_primary_owner.is_(True),
-                # ENDAST aktiva länkar:
                 models.CustomerCar.valid_to.is_(None),
-                # (valfritt men bra) börjar gälla idag eller tidigare
                 or_(models.CustomerCar.valid_from.is_(None), models.CustomerCar.valid_from <= today),
             )
-            # Välj den senast aktiverade först (stabilt urval)
             .order_by(models.CustomerCar.valid_from.desc(), models.CustomerCar.customer_id.desc())
             .all()
         )
@@ -253,27 +247,77 @@ def list_bookings(
             if key not in primary_by_pair:  # behåll den senaste
                 primary_by_pair[key] = cust
 
-    # Sätt extra attribut på varje booking (per verkstad)
+    # Sätt primärkund på varje booking
     for b in bookings:
-        cust = None
-        if b.car_id is not None:
-            cust = primary_by_pair.get((b.car_id, b.workshop_id))
+        cust = primary_by_pair.get((b.car_id, b.workshop_id)) if b.car_id is not None else None
         setattr(b, "car_primary_customer", cust)
 
-    return bookings
+    # --- efter att du har 'bookings' listan klar ---
+    if bookings:
+        booking_ids = [b.id for b in bookings]
 
+        # Hämta ALLA uppsells per booking (vi skippa bara draft i listan)
+        offers = (
+            db.query(models.UpsellOffer)
+            .filter(models.UpsellOffer.booking_id.in_(booking_ids))
+            .order_by(models.UpsellOffer.sent_at.desc().nullslast(),
+                      models.UpsellOffer.id.desc())
+            .all()
+        )
+
+        by_booking: dict[int, list[models.UpsellOffer]] = {}
+        for off in offers:
+            if off.status == models.UpsellStatus.DRAFT:
+                continue
+            by_booking.setdefault(off.booking_id, []).append(off)
+
+        for b in bookings:
+            lst = by_booking.get(b.id, [])
+            active = [o for o in lst if o.status == models.UpsellStatus.PENDING]
+            # begränsa historiklistan om du vill, t.ex. 5 st:
+            recent = lst[:5]
+            latest = lst[0] if lst else None
+
+            setattr(b, "upsells_active", active)
+            setattr(b, "upsells_recent", recent)
+            setattr(b, "upsell_latest", latest)
+
+    return bookings
 
 @router.get("/{booking_id}", response_model=schemas.BayBookingRead)
 def get_booking(booking_id: int, db: Session = Depends(get_db)):
     booking = (
         db.query(models.BayBooking)
-        .options(joinedload(models.BayBooking.service_item))
+        .options(
+            joinedload(models.BayBooking.service_item),
+            # valfritt: useful om du vill visa kund/bil direkt:
+            # joinedload(models.BayBooking.car),
+            # joinedload(models.BayBooking.customer),
+        )
         .get(booking_id)
     )
     if not booking:
         raise HTTPException(status_code=404, detail="Not found")
-    return booking
 
+    # 🔹 Aktiva upsells för just denna bokning
+    offers = (
+        db.query(models.UpsellOffer)
+        .filter(models.UpsellOffer.booking_id == booking.id)
+        .order_by(models.UpsellOffer.sent_at.desc().nullslast(),
+                  models.UpsellOffer.id.desc())
+        .all()
+    )
+
+    lst = [o for o in offers if o.status != models.UpsellStatus.DRAFT]
+    active = [o for o in lst if o.status == models.UpsellStatus.PENDING]
+    recent = lst[:5]
+    latest = lst[0] if lst else None
+
+    setattr(booking, "upsells_active", active)
+    setattr(booking, "upsells_recent", recent)
+    setattr(booking, "upsell_latest", latest)
+
+    return booking
 
 @router.put("/edit/{booking_id}", response_model=schemas.BayBookingRead)
 def update_booking(booking_id: int, payload: schemas.BayBookingUpdate, db: Session = Depends(get_db)):

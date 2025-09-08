@@ -131,7 +131,7 @@
 .warnBtn,
 .dangerBtn,
 .ghostBtn {
-  border: 0;
+  border: 1;
   border-radius: 10px;
   padding: 10px 14px;
   font-weight: 600;
@@ -146,8 +146,7 @@
 .warnBtn { background: var(--warn); color: #111827; }
 .warnBtn:hover { background: var(--warn-600); color: #fff; }
 
-.dangerBtn { background: var(--danger); color: #fff; }
-.dangerBtn:hover { background: var(--danger-600); }
+.dangerBtn { border-color: var(--danger-600); background: transparent; color: #000 }
 
 .ghostBtn { background: #f1f5f9; color: var(--text); }
 .ghostBtn:hover { background: #e2e8f0; }
@@ -322,6 +321,62 @@
 .metaItem[data-regnr]:hover::after,
 .metaItem[data-regnr]:hover::before {
   opacity: 1;
+}
+
+.upsell-list { margin: .25rem 0 0; padding-left: 1rem; }
+.upsell-item { margin: .25rem 0; display: flex; align-items: center; flex-wrap: wrap; gap: .4rem; }
+
+.tag {
+  padding: 2px 8px; border-radius: 999px; font-size: 12px; line-height: 1;
+  border: 1px solid transparent;
+}
+.tag-pending  { background:#fff8e1; border-color:#ffecb3; }
+.tag-accepted { background:#e6f7ec; border-color:#b7ebc6; }
+.tag-declined { background:#fdecea; border-color:#f5c6cb; }
+.tag-expired  { background:#f5f5f5; border-color:#e0e0e0; }
+.tag-cancelled{ background:#f5f5f5; border-color:#e0e0e0; }
+.tag-draft    { background:#eef2ff; border-color:#c7d2fe; }
+
+/* Chips (du har redan .statusChip) */
+.upsell-pending   { background: #fff4d6; color: #8a6d00; border-color: #f5e2a3; }
+.upsell-accepted  { background: #e7f8ea; color: #0f7a2a; border-color: #bfe9c7; }
+.upsell-declined  { background: #fde8e8; color: #8a1111; border-color: #f8bcbc; }
+.upsell-expired   { background: #f2f2f2; color: #6b6b6b; border-color: #e3e3e3; }
+.upsell-cancelled { background: #f2f2f2; color: #6b6b6b; border-color: #e3e3e3; }
+.upsell-draft     { background: #eef5ff; color: #1f4fa3; border-color: #cfe0ff; }
+
+.upsellLatest { margin-bottom: 12px; }
+.upsellLatestHeader,
+.upsellListHeader { font-weight: 600; margin-bottom: 6px; color: var(--text-muted, #666); }
+
+.upsellList ul { list-style: none; padding: 0; margin: 0; }
+.upsellItem { padding: 10px 0; border-top: 1px solid rgba(0,0,0,0.06); }
+.upsellItem:first-child { border-top: 0; }
+
+.upsellMain { display: flex; gap: 8px; align-items: center; }
+.upsellTitle { font-weight: 600; }
+
+.upsellMeta { font-size: 0.9rem; color: var(--text-muted, #666); display: flex; flex-wrap: wrap; gap: 8px; }
+.dotSep::before { content: "• "; color: #999; }
+
+.upsellbtn { /* du har redan en klass – annars en enkel knappstil */ }
+
+.priceTotal {
+  font-weight: bold;
+  font-size: 1.2em;
+  color: #1a4d2e;
+}
+
+
+.upsellbtn {
+  border: 1px solid #2563eb;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-weight: 600;
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
 }
 
 /* =========================

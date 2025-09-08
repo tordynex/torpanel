@@ -8,6 +8,7 @@ import HittaVerkstadPage from "./pages/booking/Hitta-Verkstad.tsx"
 import ValjTjanstPage from "@/pages/booking/Valj-Tjanst.tsx";
 import SammanfattningPage from "@/pages/booking/Sammanfattning.tsx";
 import BookingComplete from "@/components/booking/BookingComplete.tsx";
+import UpsellLanding from "@/pages/booking/UpsellLanding.tsx";
 
 export default function App() {
   const routes = useRoutes([
@@ -19,6 +20,7 @@ export default function App() {
     { path: "/boka/valj-tjanst", element: <ValjTjanstPage /> },
     { path: "/boka/sammanfattning", element: <SammanfattningPage /> },
     { path: "/boka/tack", element: <BookingComplete /> },
+    { path: "/u/:token/:action", element: <UpsellLanding /> },
 
     // Grupp-importerade route-träd
     ownerRoutes,

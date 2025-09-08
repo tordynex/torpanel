@@ -3,7 +3,7 @@ import { createPortal } from "react-dom";
 import {
   FaCheckCircle, FaClock, FaSave, FaTrash, FaTimes, FaCalendarAlt,
   FaCreditCard, FaUser, FaCarSide, FaEdit, FaExclamationTriangle, FaInfoCircle,
-  FaPlay, FaBan, FaStickyNote
+  FaPlay, FaBan, FaPlus
 } from "react-icons/fa";
 
 import {
@@ -18,6 +18,8 @@ import { completeBookingWithTime } from "@/services/bookingsService";
 import { getServiceItem, type WorkshopServiceItem } from "@/services/workshopserviceitemService";
 
 import styles from "./css/BookingDetailsModal.module.css";
+import UpsellModal from "@/components/booking/upsell/UpsellModal";
+import type {UpsellStatus} from "@/services/upsellService.ts";
 
 // --- Helpers ---
 const toLocalInputValue = (iso?: string) => {
@@ -134,6 +136,16 @@ const RadioTile: React.FC<{
   </label>
 );
 
+type Upsell = {
+  id: number;
+  title: string;
+  price_gross_ore: number;
+  status: UpsellStatus;
+  sent_at?: string | null;
+  responded_at?: string | null;
+  expires_at?: string | null;
+};
+
 const BookingDetailsModal: React.FC<Props> = ({ booking, onClose, onRefetch }) => {
   const isCompleted = booking.status === "completed";
 
@@ -151,6 +163,7 @@ const BookingDetailsModal: React.FC<Props> = ({ booking, onClose, onRefetch }) =
 
   const [serviceItem, setServiceItem] = useState<WorkshopServiceItem | null>(null);
   const [siLoading, setSiLoading] = useState<boolean>(false);
+  const [upsellOpen, setUpsellOpen] = useState(false)
 
   // NYTT: Visa "Sparat" chip en kort stund efter lyckad save
   const [justSaved, setJustSaved] = useState(false);
@@ -181,6 +194,9 @@ const BookingDetailsModal: React.FC<Props> = ({ booking, onClose, onRefetch }) =
   const [customFinalInput, setCustomFinalInput] = useState<string>("");
   const [customFinalValid, setCustomFinalValid] = useState<boolean>(true);
   const [customFinalOre, setCustomFinalOre] = useState<number | null>(null);
+  const baseGrossOre = (booking as any)?.base_gross_ore ?? null;
+  const upsellsAcceptedGrossOre = (booking as any)?.upsells_accepted_gross_ore ?? 0;
+  const totalGrossOre = (booking as any)?.total_gross_ore ?? baseGrossOre;
 
   const calcNetFromGross = (grossOre: number | null | undefined, vat: number | null | undefined) => {
     if (grossOre == null || vat == null) return null;
@@ -211,6 +227,34 @@ const BookingDetailsModal: React.FC<Props> = ({ booking, onClose, onRefetch }) =
     }
   }, [booking.id, booking.title, booking.description, booking.start_at, booking.end_at, booking.status, finalNet]);
 
+
+  const UpsellChip: React.FC<{ status: UpsellStatus }> = ({ status }) => {
+    const map: Record<UpsellStatus, { label: string; tone: string; Icon: any }> = {
+      draft:            { label: "Utkast",          tone: "upsell-draft",     Icon: FaEdit },
+      pending_customer: { label: "Väntar på svar",  tone: "upsell-pending",    Icon: FaClock },
+      accepted:         { label: "Godkänd",         tone: "upsell-accepted",   Icon: FaCheckCircle },
+      declined:         { label: "Nekad",           tone: "upsell-declined",   Icon: FaTimes },
+      expired:          { label: "Utgången",        tone: "upsell-expired",    Icon: FaExclamationTriangle },
+      cancelled:        { label: "Avbruten",        tone: "upsell-cancelled",  Icon: FaBan },
+    };
+    const M = map[status];
+    return (
+      <span className={`${styles.statusChip} ${styles[M.tone]}`}>
+        <M.Icon /> {M.label}
+      </span>
+    );
+  };
+
+
+  // litet format-hjälpmedel
+  const sek = (ore?: number | null) =>
+    typeof ore === "number" ? `${(ore/100).toFixed(0)} kr` : "–";
+
+  const fmtTime = (iso?: string | null) => {
+    if (!iso) return "";
+    const d = new Date(iso);
+    return d.toLocaleString(); // byt till din lokala formatter om du vill
+  };
   // Hämta serviceitem
   useEffect(() => {
     let cancelled = false;
@@ -467,6 +511,7 @@ const BookingDetailsModal: React.FC<Props> = ({ booking, onClose, onRefetch }) =
                   <span>{customerLabel}</span>
                 </div>
               )}
+
             </div>
 
             {/* Form / Read-only */}
@@ -516,6 +561,85 @@ const BookingDetailsModal: React.FC<Props> = ({ booking, onClose, onRefetch }) =
             </div>
           </SectionCard>
 
+          <SectionCard
+                icon={<FaPlus />}
+                title="Merförsäljning"
+                right={
+                  !isCompleted && (
+                    <button
+                      className={styles.upsellbtn}
+                      onClick={() => setUpsellOpen(true)}
+                      disabled={busy}
+                      title="Skapa nytt erbjudande"
+                    >
+                      Skapa erbjudande
+                    </button>
+                  )
+                }
+              >
+                {Boolean((booking as any).upsell_latest) ? (
+                  <div className={styles.upsellLatest}>
+                    <div className={styles.upsellLatestHeader}>Senaste</div>
+                    <div className={styles.upsellItem}>
+                      <div className={styles.upsellMain}>
+                        <strong>{(booking as any).upsell_latest.title}</strong>
+                        <UpsellChip status={(booking as any).upsell_latest.status} />
+                      </div>
+                      <div className={styles.upsellMeta}>
+                        {(Math.round(((booking as any).upsell_latest.price_gross_ore ?? 0) / 100)).toLocaleString("sv-SE")} kr
+                        {(booking as any).upsell_latest.sent_at && (
+                          <span className={styles.dotSep}>
+                            Skickad {new Date((booking as any).upsell_latest.sent_at).toLocaleString()}
+                          </span>
+                        )}
+                        {(booking as any).upsell_latest.responded_at && (
+                          <span className={styles.dotSep}>
+                            Svar {new Date((booking as any).upsell_latest.responded_at).toLocaleString()}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className={styles.muted}>Inga merförsäljningar ännu.</div>
+                )}
+
+                {Array.isArray((booking as any).upsells_recent) && (booking as any).upsells_recent.length > 1 && (
+                  <div className={styles.upsellList}>
+                    <div className={styles.upsellListHeader}>Historik</div>
+                    <ul>
+                      {(booking as any).upsells_recent
+                        .filter((u: Upsell) => u.id !== (booking as any).upsell_latest?.id) // undvik dubblett
+                        .map((u: Upsell) => (
+                          <li key={u.id} className={styles.upsellItem}>
+                            <div className={styles.upsellMain}>
+                              <span className={styles.upsellTitle}>{u.title}</span>
+                              <UpsellChip status={u.status} />
+                            </div>
+                            <div className={styles.upsellMeta}>
+                              {(Math.round((u.price_gross_ore ?? 0) / 100)).toLocaleString("sv-SE")} kr
+                              {u.sent_at && <span className={styles.dotSep}>Skickad {new Date(u.sent_at).toLocaleString()}</span>}
+                              {u.responded_at && <span className={styles.dotSep}>Svar {new Date(u.responded_at).toLocaleString()}</span>}
+                            </div>
+                          </li>
+                        ))}
+                    </ul>
+                  </div>
+                )}
+
+                {/* Din modal för att skapa nytt erbjudande */}
+                {!isCompleted && upsellOpen && (
+                  <UpsellModal
+                    bookingId={booking.id}
+                    onClose={() => setUpsellOpen(false)}
+                    onSent={() => {
+                      setUpsellOpen(false);
+                      if (onRefetch) onRefetch();
+                    }}
+                  />
+                )}
+              </SectionCard>
+
           {/* Pris-kort */}
           <SectionCard
             icon={<FaCreditCard />}
@@ -524,23 +648,36 @@ const BookingDetailsModal: React.FC<Props> = ({ booking, onClose, onRefetch }) =
           >
             <div className={styles.priceRow}>
               <div>
-                <div className={styles.priceLabel}>Inkl. moms</div>
-                <div className={styles.priceValue}>{formatCurrencySEK(displayGross)}</div>
+                <div className={styles.priceLabel}>Grundpris (inkl. moms)</div>
+                <div className={styles.priceValue}>{formatCurrencySEK(baseGrossOre)}</div>
               </div>
               <div>
-                <div className={styles.priceLabel}>Exkl. moms</div>
-                <div className={styles.priceSub}>
-                  {finalNet != null ? formatCurrencySEK(finalNet) : (priceNet != null ? formatCurrencySEK(priceNet) : "–")}
-                </div>
+                <div className={styles.priceLabel}>Merförsäljning (godkänd)</div>
+                <div className={styles.priceValue}>{formatCurrencySEK(upsellsAcceptedGrossOre)}</div>
+              </div>
+              <div>
+                <div className={styles.priceLabel}>Totalt inkl. moms</div>
+                <div className={styles.priceTotal}>{formatCurrencySEK(totalGrossOre)}</div>
               </div>
             </div>
-            {siLoading && <small className={styles.muted}>Hämtar prisinfo…</small>}
           </SectionCard>
 
+
           {/* Slutför-kort */}
-          {!isCompleted && completeOpen && (
+          {!isCompleted && (
             <SectionCard icon={<FaCheckCircle />} title="Slutför bokning">
               <div className={styles.completeGrid}>
+
+                {/* Summering av priset */}
+                <div className={styles.summaryBox}>
+                  <div>Grundpris: {formatCurrencySEK(baseGrossOre)}</div>
+                  <div>Merförsäljning: {formatCurrencySEK(upsellsAcceptedGrossOre)}</div>
+                  <div className={styles.totalLine}>
+                    Totalt: <strong>{formatCurrencySEK(totalGrossOre)}</strong>
+                  </div>
+                </div>
+
+                {/* Tid */}
                 <label className={styles.label}>
                   Tid som gick åt (minuter)
                   <input
@@ -553,6 +690,7 @@ const BookingDetailsModal: React.FC<Props> = ({ booking, onClose, onRefetch }) =
                   />
                 </label>
 
+                {/* Val av prisstrategi */}
                 <div className={styles.tileGrid}>
                   <RadioTile
                     name="pricingChoice"
@@ -560,7 +698,7 @@ const BookingDetailsModal: React.FC<Props> = ({ booking, onClose, onRefetch }) =
                     checked={pricingChoice === "keep_estimate" || pricingChoice === null}
                     onChange={() => setPricingChoice("keep_estimate")}
                     title="Behåll uppskattat pris"
-                    description={netFromGrossOre != null ? `Exkl. moms: ${formatCurrencySEK(netFromGrossOre)}` : "—"}
+                    description={`Totalt inkl. moms: ${formatCurrencySEK(totalGrossOre)}`}
                     icon={<FaCreditCard />}
                   />
                   <RadioTile
@@ -571,9 +709,9 @@ const BookingDetailsModal: React.FC<Props> = ({ booking, onClose, onRefetch }) =
                     disabled={!canChargeTime}
                     title="Debitera tid × timpris"
                     description={
-                      canChargeTime && serviceItem?.hourly_rate_ore
-                        ? `Timpris: ${(serviceItem.hourly_rate_ore / 100).toLocaleString("sv-SE", { style: "currency", currency: "SEK" })} exkl. moms`
-                        : "Inte tillgängligt för denna bokning"
+                      canChargeTime
+                        ? `Timpris: ${(serviceItem?.hourly_rate_ore ?? 0) / 100} kr exkl. moms`
+                        : "Inte tillgängligt"
                     }
                     icon={<FaClock />}
                   />
@@ -582,66 +720,65 @@ const BookingDetailsModal: React.FC<Props> = ({ booking, onClose, onRefetch }) =
                     value="custom_final"
                     checked={pricingChoice === "custom_final"}
                     onChange={() => setPricingChoice("custom_final")}
-                    title="Eget slutpris (exkl. moms)"
+                    title="Ange slutpris (inkl. moms)"
                     icon={<FaEdit />}
                   />
                 </div>
 
-                {pricingChoice === "charge_time" && canChargeTime && timeChargePreviewOre != null && (
+                {/* Extra fält för valda alternativ */}
+                {pricingChoice === "charge_time" && (
                   <div className={styles.previewLine}>
-                    Förhandsvisning: <strong>{formatCurrencySEK(timeChargePreviewOre)}</strong> exkl. moms
-                    &nbsp;({formatCurrencySEK(Math.round(timeChargePreviewOre * (1 + (vatPercent ?? 0) / 100)))} inkl. moms)
+                    Förhandsvisning tid: {formatCurrencySEK(timeChargePreviewOre)} exkl. moms
                   </div>
                 )}
 
-                {pricingChoice === "custom_final" && (
+                 {pricingChoice === "custom_final" && (
                   <div className={styles.fieldGroup}>
                     <input
                       className={styles.input}
                       type="text"
                       inputMode="decimal"
-                      placeholder="Belopp i kronor, t.ex. 1250,50"
+                      placeholder="Slutpris inkl. moms"
                       value={customFinalInput}
-                      onChange={(e) => {
-                        const v = e.target.value;
-                        setCustomFinalInput(v);
-                        const { ore, valid } = parsePriceToOre(v);
-                        setCustomFinalOre(ore);
-                        setCustomFinalValid(valid);
-                      }}
-                    />
-                    <small className={styles.muted}>
-                      Skriv heltal (kronor) eller med decimaler (komma eller punkt). Max 2 decimaler.
-                    </small>
-
-                    {customFinalInput && customFinalValid && customFinalOre != null && (
+                        onChange={(e) => {
+                          const v = e.target.value;
+                          setCustomFinalInput(v);
+                          const { ore, valid } = parsePriceToOre(v);
+                          setCustomFinalOre(ore);
+                          setCustomFinalValid(valid);
+                        }}
+                      />
                       <small className={styles.muted}>
-                        Sparas som <strong>{customFinalOre}</strong> öre (exkl. moms).
+                        Skriv heltal (kronor) eller med decimaler (komma eller punkt). Max 2 decimaler.
                       </small>
-                    )}
 
-                    {customFinalInput && !customFinalValid && (
-                      <small className={styles.errorText}>Ogiltigt belopp.</small>
-                    )}
-                  </div>
-                )}
-              </div>
+                      {customFinalInput && customFinalValid && customFinalOre != null && (
+                        <small className={styles.muted}>
+                          Sparas som <strong>{customFinalOre}</strong> öre (exkl. moms).
+                        </small>
+                      )}
 
-              <div className={styles.completeActions}>
-                <button
-                  className={styles.ghostBtn}
-                  onClick={() => { setCompleteOpen(false); setActualMinutesStr(""); setPricingChoice(null); }}
-                  disabled={busy}
-                >
-                  Avbryt
-                </button>
-                <button className={styles.primaryBtn} onClick={handleMarkCompleted} disabled={busy}>
-                  Slutför
-                </button>
-              </div>
-            </SectionCard>
-          )}
+                      {customFinalInput && !customFinalValid && (
+                        <small className={styles.errorText}>Ogiltigt belopp.</small>
+                      )}
+                    </div>
+                  )}
+                </div>
 
+                <div className={styles.completeActions}>
+                  <button
+                    className={styles.ghostBtn}
+                    onClick={() => { setCompleteOpen(false); setActualMinutesStr(""); setPricingChoice(null); }}
+                    disabled={busy}
+                  >
+                    Avbryt
+                  </button>
+                  <button className={styles.primaryBtn} onClick={handleMarkCompleted} disabled={busy}>
+                    Slutför
+                  </button>
+                </div>
+              </SectionCard>
+             )}
           {error && <div className={styles.alertError}><FaInfoCircle /> {error}</div>}
         </div>
 

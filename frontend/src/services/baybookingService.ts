@@ -12,6 +12,15 @@ export enum BookingStatus {
   NO_SHOW = "no_show",
 }
 
+export interface UpsellSummary {
+  id: number
+  title: string
+  status: "draft" | "pending_customer" | "accepted" | "declined" | "expired" | "cancelled"
+  price_gross_ore: number
+  sent_at?: string | null
+  expires_at?: string | null
+}
+
 // --- Scheman (spegel av Pydantic) ---
 export interface BayBookingBase {
   workshop_id: number;
@@ -82,6 +91,8 @@ export interface BayBookingRead extends BayBookingBase {
   final_price_ore?: number | null;
   actual_minutes_spent?: number | null;
   billed_from_time?: boolean | null;
+
+  upsells_active: UpsellSummary[];
 }
 
 export interface BayAvailabilityResult {

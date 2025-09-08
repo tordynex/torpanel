@@ -1,11 +1,11 @@
 from sqlalchemy import (
     Column, Integer, String, ForeignKey, Table, Date, DateTime, Text, Boolean, Float,
-    select, UniqueConstraint, Index, CheckConstraint, Time, func
+    select, UniqueConstraint, Index, CheckConstraint, Time, func, Enum, case, literal, cast, Numeric
 )
 from sqlalchemy import Enum as SAEnum
 from sqlalchemy.orm import relationship, declarative_base, column_property, validates
 import enum
-from sqlalchemy.dialects.postgresql import ExcludeConstraint
+from sqlalchemy.dialects.postgresql import ExcludeConstraint, DOUBLE_PRECISION
 from sqlalchemy.ext.associationproxy import association_proxy
 from datetime import date
 from sqlalchemy.ext.hybrid import hybrid_property
@@ -377,6 +377,65 @@ class VehicleProfile(Base):
 
     car = relationship("Car", backref="vehicle_profile", uselist=False)
 
+class UpsellStatus(str, enum.Enum):
+    DRAFT = "draft"
+    PENDING = "pending_customer"
+    ACCEPTED = "accepted"
+    DECLINED = "declined"
+    EXPIRED = "expired"
+    CANCELLED = "cancelled"
+
+class UpsellOffer(Base):
+    __tablename__ = "upsell_offers"
+    id = Column(Integer, primary_key=True)
+
+    workshop_id = Column(Integer, ForeignKey("workshops.id", ondelete="CASCADE"), nullable=False, index=True)
+
+    # ⬇️ NYTT: Koppla alltid till bokning
+    booking_id = Column(Integer, ForeignKey("baybookings.id", ondelete="CASCADE"), nullable=False, index=True)
+    booking = relationship("BayBooking", back_populates="upsell_offers")
+
+    # ⬇️ GÖR VALFRI: servicelog kan saknas vid skapandet
+    service_log_id = Column(Integer, ForeignKey("servicelogs.id", ondelete="SET NULL"), nullable=True, index=True)
+    service_log = relationship("ServiceLog")
+
+    customer_id = Column(Integer, ForeignKey("customers.id", ondelete="SET NULL"), nullable=True, index=True)
+    car_id = Column(Integer, ForeignKey("cars.id", ondelete="SET NULL"), nullable=True, index=True)
+
+    title = Column(String, nullable=False)
+    recommendation = Column(Text, nullable=True)
+    sms_body = Column(Text, nullable=False, default="")
+
+    price_gross_ore = Column(Integer, nullable=False)
+    vat_percent = Column(Integer, nullable=True)
+    currency = Column(String, nullable=False, default="SEK")
+
+    approval_token = Column(String, unique=True, nullable=False, index=True)
+    status = Column(Enum(UpsellStatus), nullable=False, default=UpsellStatus.DRAFT)
+
+    sent_at = Column(DateTime(timezone=True), nullable=True)
+    expires_at = Column(DateTime(timezone=True), nullable=True)
+    responded_at = Column(DateTime(timezone=True), nullable=True)
+
+    created_by_user_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
+    cancelled_by_user_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
+
+    last_sms_id = Column(Integer, ForeignKey("sms_messages.id", ondelete="SET NULL"), nullable=True)
+
+    workshop = relationship("Workshop")
+    customer = relationship("Customer")
+    car = relationship("Car")
+    created_by_user = relationship("User", foreign_keys=[created_by_user_id])
+
+    __table_args__ = (
+        Index("ix_upsell_workshop_status", "workshop_id", "status"),
+    )
+
+    @hybrid_property
+    def price_gross_sek(self):
+        return (self.price_gross_ore or 0) / 100.0
+
+
 class BayBooking(Base):
     __tablename__ = "baybookings"
 
@@ -487,6 +546,49 @@ class BayBooking(Base):
             where=(assigned_user_id.isnot(None))
         ),
     )
+
+    upsell_offers = relationship(
+        "UpsellOffer",
+        back_populates="booking",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
+
+    # Baspris inkl. moms i öre (om du lagrar gross direkt använder vi det;
+    # annars räknar vi fram gross från net + VAT; None om ej går att räkna)
+    @hybrid_property
+    def base_gross_ore(self):
+        if self.price_gross_ore is not None:
+            return self.price_gross_ore
+        vat = self.vat_percent or 0
+        base_net = self.final_price_ore if self.final_price_ore is not None else self.price_net_ore
+        if base_net is None:
+            return None
+        return int(round(base_net * (1 + vat / 100)))
+
+    # SUM av godkända upsells (gross, öre) – SQL-optimerad column_property
+    upsells_accepted_gross_ore = column_property(
+        select(
+            func.coalesce(
+                func.sum(
+                    case(
+                        (UpsellOffer.status == UpsellStatus.ACCEPTED, UpsellOffer.price_gross_ore),
+                        else_=literal(0)
+                    )
+                ),
+                0
+            )
+        )
+        .where(UpsellOffer.booking_id == id)
+        .correlate_except(UpsellOffer)
+        .scalar_subquery()
+    )
+
+    # Total gross = baspris (gross) + accepted upsells (gross)
+    @hybrid_property
+    def total_gross_ore(self):
+        base = self.base_gross_ore or 0
+        return base + (self.upsells_accepted_gross_ore or 0)
 
 class BayClosure(Base):
     __tablename__ = "bayclosures"
@@ -659,7 +761,6 @@ class BookingRequestServiceItem(Base):
     __tablename__ = "booking_request_service_items"
     booking_request_id = Column(Integer, ForeignKey("booking_requests.id", ondelete="CASCADE"), primary_key=True)
     service_item_id = Column(Integer, ForeignKey("workshop_service_items.id", ondelete="CASCADE"), primary_key=True)
-    __table_args__ = (UniqueConstraint("booking_request_id", "service_item_id", name="uq_br_serviceitem"),)
 
 class BookingRequest(Base):
     __tablename__ = "booking_requests"
@@ -716,4 +817,33 @@ class BookingRequest(Base):
         ),
         Index("ix_bookingreq_workshop_status_created", "workshop_id", "status", "created_at"),
     )
+
+class SmsStatus(str, enum.Enum):
+    QUEUED = "queued"
+    SENT = "sent"
+    DELIVERED = "delivered"
+    FAILED = "failed"
+    REJECTED = "rejected"
+
+class SmsMessage(Base):
+    __tablename__ = "sms_messages"
+    id = Column(Integer, primary_key=True)
+
+    workshop_id = Column(Integer, ForeignKey("workshops.id", ondelete="CASCADE"), nullable=False, index=True)
+    to_phone = Column(String, nullable=False, index=True)
+    body = Column(Text, nullable=False)
+
+    provider = Column(String, nullable=True)
+    provider_message_id = Column(String, nullable=True)
+    status = Column(Enum(SmsStatus), nullable=False, default=SmsStatus.QUEUED)
+    error_message = Column(String, nullable=True)
+
+    created_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now())
+    sent_at = Column(DateTime(timezone=True), nullable=True)
+    delivered_at = Column(DateTime(timezone=True), nullable=True)
+
+    # koppla valfritt till upsell
+    upsell_offer_id = Column(Integer, nullable=True)
+
+    workshop = relationship("Workshop")
 

@@ -213,6 +213,17 @@ def create_customer(
     # Minst en av e-post/telefon måste finnas för dedupe och kontakt
     email_norm = _norm_email(payload.email)
     phone_norm = _norm_phone(payload.phone)
+
+    # 🔧 PATCH: Om kunden kopplas till en bil måste telefonnumret vara E.164 med +46 som default
+    linking_to_car = bool(payload.car_id or payload.registration_number)
+    if phone_norm and linking_to_car:
+        # om redan landskodad (+...) – behåll
+        if not phone_norm.startswith("+"):
+            # ta bort ev. ledande 0: "070..." -> "70..."
+            if phone_norm.startswith("0"):
+                phone_norm = phone_norm[1:]
+            phone_norm = f"+46{phone_norm}"
+
     if not email_norm and not phone_norm:
         raise HTTPException(status_code=400, detail="Provide at least one of email or phone")
 
@@ -262,3 +273,4 @@ def create_customer(
     db.commit()
     db.refresh(customer)
     return customer
+

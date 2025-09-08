@@ -3,8 +3,8 @@
 .nav {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;             /* lite tätare = modernare */
-  padding-left: 1rem;       /* något mindre vänsterpadding */
+  gap: 0.75rem;
+  padding-left: 1rem;
   padding-right: 1rem;
 }
 
@@ -19,22 +19,18 @@
   border-radius: 8px;
   transition: background-color 0.15s ease, color 0.15s ease;
 }
-.navLink:hover {
-  background-color: rgba(255, 255, 255, 0.06);
-}
+.navLink:hover { background-color: rgba(255, 255, 255, 0.06); }
 
 .active { color: #ef5027; }
 
 /* ===== inställningar-grupp ===== */
-.group {
-  margin-top: 0.25rem;
-}
+.group { margin-top: 0.25rem; }
 
 .groupLabel {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: #9ca3af;          /* neutral grå */
+  color: #9ca3af;
   font-size: 0.78rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -43,9 +39,7 @@
   user-select: none;
 }
 
-.groupIcon {
-  font-size: 0.85rem;
-}
+.groupIcon { font-size: 0.85rem; }
 
 .subNav {
   margin-top: 0.25rem;
@@ -54,7 +48,7 @@
   flex-direction: column;
   gap: 0.35rem;
   padding-left: 0.6rem;
-  border-left: 1px solid rgba(255, 255, 255, 0.08); /* subtil guide-linje */
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .subNavLink {
@@ -89,6 +83,7 @@
   display: flex;
   flex-direction: column;
   padding: 1rem 0;
+  /* Desktop default (synlig) */
 }
 
 .logoWrapper {
@@ -99,10 +94,7 @@
   margin-bottom: 2rem;
 }
 
-.logo {
-  max-width: 180px;
-  height: auto;
-}
+.logo { max-width: 180px; height: auto; }
 
 .main {
   flex-grow: 1;
@@ -122,7 +114,6 @@
   flex: 0 0 auto;
 }
 
-
 .headerTitle {
   font-weight: 700;
   font-size: 1rem;
@@ -139,33 +130,17 @@
   background: #fff;
   color: #374151;
   font-size: 0.92rem;
-  max-width: 52vw; /* undvik overflow på små skärmar */
+  max-width: 52vw;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.headerName {
-  font-weight: 600;
-  color: #111827;
-}
+.headerName { font-weight: 600; color: #111827; }
+.headerWorkshop { color: #4b5563; overflow: hidden; text-overflow: ellipsis; }
+.sep { color: #9ca3af; }
 
-.headerWorkshop {
-  color: #4b5563;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-
-.sep {
-  color: #9ca3af;
-}
-
-.headerRight {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
+.headerRight { display: flex; align-items: center; gap: 10px; }
 
 .content {
   padding: 0;
@@ -187,20 +162,160 @@
   font-size: 0.92rem;
   transition: background-color 0.15s ease, border-color 0.15s ease;
 }
-.logoutBtn:hover {
-  background: #d64420;
-  border-color: #d64420;
+.logoutBtn:hover { background: #d64420; border-color: #d64420; }
+
+/* ========= NYTT: mobil/off-canvas =========== */
+
+/* Dölj hamburgaren på desktop – visas bara på mobil */
+.menuBtn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  color: #1f2937;
+  cursor: pointer;
+  margin-right: 10px;
+}
+.menuBtn svg { font-size: 1rem; }
+
+/* Övre rad i sidomeny som bara syns på mobil (logo + stäng) */
+.sidebarHeaderMobile {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0.75rem 0.5rem;
+}
+.closeBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.2);
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+}
+
+/* Overlay som fångar klick utanför */
+.sidebarOverlay {
+  display: none; /* default av */
 }
 
 
-/* Responsiv finputsning */
+/* Global färgvariabel för hamburgaren */
+:root {
+  --menu-color: #ef5027; /* orange */
+}
+
+/* Bas för knappen (desktop döljs) */
+.menuBtn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+}
+
+/* Själva hamburgarikonen (3 staplar, utan SVG) */
+.hamburger {
+  position: relative;
+  width: 22px;
+  height: 2px;
+  background: var(--menu-color);
+  border-radius: 2px;
+  display: block;
+}
+.hamburger::before,
+.hamburger::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  width: 22px;
+  height: 2px;
+  background: var(--menu-color);
+  border-radius: 2px;
+}
+.hamburger::before { top: -6px; }
+.hamburger::after  { top:  6px; }
+
+/* Hover/aktiv ton */
+.menuBtn:hover .hamburger,
+.menuBtn:hover .hamburger::before,
+.menuBtn:hover .hamburger::after {
+  background: #d64420;
+}
+
+/* Visa på mobil och håll sidomenyn off-canvas som tidigare */
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    left: 0; top: 0; bottom: 0;
+    width: min(80vw, 300px);
+    transform: translateX(-100%);
+    transition: transform 0.2s ease;
+    z-index: 40;
+    box-shadow: 0 0 0 transparent;
+  }
+  .sidebarOpen {
+    transform: translateX(0);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+  }
+
+  .sidebarOverlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.35);
+    z-index: 30;
+    border: none;
+  }
+
+  .logoWrapper { display: none; }
+  .sidebarHeaderMobile { display: flex; }
+
+  .header {
+    padding: 0.75rem 0.75rem;
+    gap: 8px;
+  }
+
+  /* Visa knappen på mobil */
+  .menuBtn { display: inline-flex !important; }
+
+  .headerTitle {
+    flex: 1 1 auto;
+    text-align: left;
+    padding-left: 4px;
+  }
+
+  .headerRight { gap: 6px; }
+
+  .headerBadge {
+    max-width: 44vw;
+    padding: 5px 8px;
+    font-size: 0.88rem;
+  }
+
+  .main { width: 100%; }
+}
+
+/* Din 640px-finput finns kvar */
 @media (max-width: 640px) {
   .headerBadge {
     max-width: 48vw;
     padding: 5px 8px;
     font-size: 0.88rem;
   }
-  .headerTitle {
-    font-size: 0.95rem;
-  }
+  .headerTitle { font-size: 0.95rem; }
 }
+

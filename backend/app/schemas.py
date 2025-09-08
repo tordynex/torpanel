@@ -4,7 +4,7 @@ from datetime import date, datetime, time
 
 from app import models
 
-from .models import UserRole, BayType, VehicleClass, TimeOffType, ServicePriceType
+from .models import UserRole, BayType, VehicleClass, TimeOffType, ServicePriceType, UpsellStatus
 import enum
 
 
@@ -277,6 +277,16 @@ class WorkshopBayRead(WorkshopBayReadSimple):
     model_config = ConfigDict(from_attributes=True)
 # ---------- BayBooking ----------
 
+class UpsellSummary(BaseModel):
+    id: int
+    title: str
+    price_gross_ore: int
+    price_gross_sek: float
+    status: UpsellStatus
+    sent_at: Optional[datetime] = None
+    expires_at: Optional[datetime] = None
+    model_config = ConfigDict(from_attributes=True)
+
 class BayBookingBase(BaseModel):
     workshop_id: int
     bay_id: int
@@ -374,6 +384,14 @@ class BayBookingRead(BaseModel):
     car: Optional["CarReadSimple"] = None
     customer: Optional["CustomerSummary"] = None
     car_primary_customer: Optional["CustomerSummary"] = None
+
+    upsells_active: List[UpsellSummary] = []
+    upsells_recent: List["UpsellRead"] = []
+    upsell_latest: Optional["UpsellRead"] = None
+
+    base_gross_ore: Optional[int] = None
+    upsells_accepted_gross_ore: int = 0
+    total_gross_ore: int = 0
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -721,6 +739,40 @@ class BookingRequestRead(BaseModel):
     # service_item: Optional["WorkshopServiceItemRead"] = None
 
     model_config = ConfigDict(from_attributes=True)
+
+# --- UPSALE SCHEMAS ---
+
+class UpsellCreate(BaseModel):
+    booking_id: int
+    title: str
+    recommendation: Optional[str] = None
+    price_gross_sek: float
+    vat_percent: Optional[int] = 25
+    sms_override: Optional[str] = None
+    expires_hours: int = 24
+
+class UpsellRead(BaseModel):
+    id: int
+    title: str
+    recommendation: Optional[str] = None
+    status: UpsellStatus
+    price_gross_ore: int
+    price_gross_sek: float
+    vat_percent: Optional[int]
+    sms_body: str
+    sent_at: Optional[datetime]
+    expires_at: Optional[datetime]
+
+    booking_id: int
+    service_log_id: Optional[int] = None
+    customer_id: Optional[int] = None
+    car_id: Optional[int] = None
+
+    model_config = ConfigDict(from_attributes=True)
+
+class UpsellSendRequest(BaseModel):
+    idempotency_key: Optional[str] = None
+
 
 # Pydantic v2: rebuild for forward refs
 BayBookingRead.model_rebuild()
