@@ -74,7 +74,7 @@ export default function WorkshopLayout() {
         id="workshop-sidebar"
       >
         <div className={styles.sidebarHeaderMobile}>
-          <img src="/autonexo_logo.png" alt="Autonexo logo" className={styles.logo} />
+          <img src="/autonexum_logo.png" alt="Autonexum logo" className={styles.logo} />
           <button
             className={styles.closeBtn}
             onClick={() => setMobileNavOpen(false)}
@@ -86,7 +86,7 @@ export default function WorkshopLayout() {
         </div>
 
         <div className={styles.logoWrapper}>
-          <img src="/autonexo_logo.png" alt="Autonexo logo" className={styles.logo} />
+          <img src="/autonexum_logo.png" alt="Autonexum logo" className={styles.logo} />
         </div>
 
         <nav className={styles.nav} aria-label="Sidmeny">
@@ -164,7 +164,7 @@ export default function WorkshopLayout() {
           <span className={styles.hamburger} aria-hidden="true" />
         </button>
 
-          <div className={styles.headerTitle}>Autonexo Partnerpanel</div>
+          <div className={styles.headerTitle}>Autonexum Partnerpanel</div>
 
           <div className={styles.headerRight}>
             <div className={styles.headerBadge} title={`${userName} | ${workshopLabel}`}>

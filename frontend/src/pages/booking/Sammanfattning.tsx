@@ -401,7 +401,7 @@ export default function SammanfattningPage() {
         car_id: carId ?? undefined,
         registration_number: regNr,
         service_item_id: serviceIds[0] ?? null, // endast ett id kan skickas
-        source: "autonexo-web",
+        source: "autonexum-web",
         description: descriptionLines.join(" "),
         // PRIS: alltid EXKL. MOMS, endast för icke-request-only fixed
         price_net_ore: fixedNetSumOre > 0 ? fixedNetSumOre : undefined,

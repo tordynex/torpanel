@@ -10,6 +10,8 @@ app.add_middleware(
         "https://portal.autonexo.se",
         "https://www.portal.autonexo.se",
         "https://www.autonexo.se",
+        "https://portal.autonexum.se",
+        "https://.autonexum.se",
         "http://localhost:5173",
     ],
     allow_credentials=True,

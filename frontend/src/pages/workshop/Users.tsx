@@ -54,6 +54,30 @@ function sortWH(a: UserWorkingHours, b: UserWorkingHours) {
   return a.start_time.localeCompare(b.start_time);
 }
 
+/** Små UI-hjälpare (utan att ändra logik) */
+function SectionTitle({
+  icon,
+  children,
+}: {
+  icon: JSX.Element;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className={styles.cardTitle} style={{ alignItems: "center", gap: 8 }}>
+      <span style={{ display: "inline-flex", alignItems: "center" }}>{icon}</span>
+      <span>{children}</span>
+    </div>
+  );
+}
+
+function InlineHelp({ children }: { children: React.ReactNode }) {
+  return (
+    <span className={styles.muted} style={{ fontSize: 12 }}>
+      {children}
+    </span>
+  );
+}
+
 export default function WorkshopUsersPage() {
   const auth = useAuth();
   const userName = useMemo(() => auth?.username ?? "användare", [auth]);
@@ -200,7 +224,7 @@ export default function WorkshopUsersPage() {
       ]);
       setWorkingHours(wh.sort(sortWH));
       setTimeOff(to);
-    } catch (e: any) {
+    } catch {
       setScheduleError("Kunde inte hämta arbetstider.");
       setTimeOffError("Kunde inte hämta frånvaro.");
     } finally {
@@ -362,7 +386,7 @@ export default function WorkshopUsersPage() {
   const workshopCity = workshop?.city ?? "—";
 
   return (
-    <div className={styles.page}>
+    <div className={styles.page} style={{ background: "#fff" }}>
       {/* Header */}
       <header className={styles.header}>
         <div className={styles.headerRight}>
@@ -375,62 +399,69 @@ export default function WorkshopUsersPage() {
       <section className={styles.grid}>
         {/* Vänster: skapa anställd */}
         <div className={styles.card}>
-          <div className={styles.cardTitle}>
-            <FiUserPlus className={styles.cardTitleIcon} />
+          <SectionTitle icon={<FiUserPlus className={styles.cardTitleIcon} />}>
             Lägg till verkstadsanställd
-          </div>
+          </SectionTitle>
 
           {!workshop?.id ? (
             <div className={styles.placeholder}>Ingen verkstad vald.</div>
           ) : (
             <form className={styles.form} onSubmit={handleCreate}>
-              <label className={styles.label}>
-                E-post
-                <input
-                  className={styles.input}
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="namn@exempel.se"
-                  required
-                />
-              </label>
-              <label className={styles.label}>
-                Användarnamn
-                <input
-                  className={styles.input}
-                  type="text"
-                  value={usernameInput}
-                  onChange={(e) => setUsernameInput(e.target.value)}
-                  placeholder="t.ex. anna.k"
-                  required
-                />
-              </label>
-              <label className={styles.label}>
-                Lösenord
-                <input
-                  className={styles.input}
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Minst 8 tecken"
-                  required
-                />
-              </label>
-              <button className={styles.primaryBtn} type="submit" disabled={creating}>
-                {creating ? "Skapar…" : "Skapa anställd"}
-              </button>
-              {createMsg && <div className={styles.formMsg}>{createMsg}</div>}
+              <div className={styles.formRow}>
+                <label className={styles.label}>
+                  E-post
+                  <input
+                    className={styles.input}
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="namn@exempel.se"
+                    required
+                  />
+                </label>
+                <label className={styles.label}>
+                  Användarnamn
+                  <input
+                    className={styles.input}
+                    type="text"
+                    value={usernameInput}
+                    onChange={(e) => setUsernameInput(e.target.value)}
+                    placeholder="t.ex. anna.k"
+                    required
+                  />
+                </label>
+                <label className={styles.label}>
+                  Lösenord
+                  <input
+                    className={styles.input}
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Minst 8 tecken"
+                    required
+                  />
+                </label>
+              </div>
+
+              <div className={styles.formRow} style={{ justifyContent: "flex-end" }}>
+                <button className={styles.primaryBtn} type="submit" disabled={creating}>
+                  {creating ? "Skapar…" : "Skapa anställd"}
+                </button>
+              </div>
+              {createMsg && (
+                <div className={styles.formMsg} role="status">
+                  {createMsg}
+                </div>
+              )}
             </form>
           )}
         </div>
 
         {/* Höger: lista användare */}
         <div className={styles.card}>
-          <div className={styles.cardTitle}>
-            <FiUsers className={styles.cardTitleIcon} />
+          <SectionTitle icon={<FiUsers className={styles.cardTitleIcon} />}>
             Användare i denna verkstad
-          </div>
+          </SectionTitle>
 
           {loading ? (
             <div className={styles.placeholder}>Laddar användare…</div>
@@ -491,42 +522,69 @@ export default function WorkshopUsersPage() {
 
       {/* Modal: Arbetstider / Frånvaro */}
       <Modal
-        title={
-          scheduleOpenFor ? `Schema – ${scheduleOpenFor.username}` : ""
-        }
+        title={scheduleOpenFor ? `Schema – ${scheduleOpenFor.username}` : ""}
         open={!!scheduleOpenFor}
         onClose={closeSchedule}
         footer={
-          <div className={styles.modalFooterRow}>
-            <button className={styles.secondaryBtn} onClick={applyOfficePreset}>
-              <FiSettings /> 08–17 mån–fre
-            </button>
-            <button
-              className={styles.secondaryBtn}
-              onClick={applyOfficePresetWithLunch}
-            >
-              <FiCoffee /> 08–17 + lunch {lunchStart}–{lunchEnd}
-            </button>
+          <div
+            className={styles.modalFooterRow}
+            style={{
+              display: "flex",
+              gap: 8,
+              flexWrap: "wrap",
+              justifyContent: "space-between",
+            }}
+          >
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+              <button className={styles.secondaryBtn} onClick={applyOfficePreset}>
+                <FiSettings /> 08–17 mån–fre
+              </button>
+              <button
+                className={styles.secondaryBtn}
+                onClick={applyOfficePresetWithLunch}
+              >
+                <FiCoffee /> 08–17 + lunch {lunchStart}–{lunchEnd}
+              </button>
+            </div>
             <button className={styles.primaryBtn} onClick={closeSchedule}>
               <FiX /> Stäng
             </button>
           </div>
         }
       >
+        {/* Top-meta */}
+        {scheduleOpenFor && (
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: 12,
+              padding: "6px 0 12px",
+              borderBottom: "1px solid #eee",
+              marginBottom: 12,
+            }}
+          >
+            <div style={{ fontSize: 14 }}>
+              <strong>{scheduleOpenFor.username}</strong>{" "}
+              <InlineHelp>
+                {workshopName} {workshopCity ? `• ${workshopCity}` : ""}
+              </InlineHelp>
+            </div>
+            <InlineHelp>Alla tider lagras per användare</InlineHelp>
+          </div>
+        )}
+
         {/* Tabs */}
-        <div className={styles.tabs}>
+        <div className={styles.tabs} style={{ position: "sticky", top: 0, background: "#fff", zIndex: 1 }}>
           <button
-            className={`${styles.tabBtn} ${
-              activeTab === "hours" ? styles.tabActive : ""
-            }`}
+            className={`${styles.tabBtn} ${activeTab === "hours" ? styles.tabActive : ""}`}
             onClick={() => setActiveTab("hours")}
           >
             <FiClock /> Arbetstider
           </button>
           <button
-            className={`${styles.tabBtn} ${
-              activeTab === "timeoff" ? styles.tabActive : ""
-            }`}
+            className={`${styles.tabBtn} ${activeTab === "timeoff" ? styles.tabActive : ""}`}
             onClick={() => setActiveTab("timeoff")}
           >
             <FiCalendar /> Frånvaro
@@ -542,21 +600,39 @@ export default function WorkshopUsersPage() {
               {scheduleError && <div className={styles.error}>{scheduleError}</div>}
 
               {/* Ny rad: arbetstid + ev. lunch */}
-              <div className={styles.scheduleForm}>
-                <label className={styles.labelInline}>
-                  Veckodag
-                  <select
-                    className={styles.select}
-                    value={weekday}
-                    onChange={(e) => setWeekday(parseInt(e.target.value, 10))}
-                  >
-                    {WEEKDAYS.map((d, i) => (
-                      <option key={i} value={i}>
-                        {d}
-                      </option>
+              <div
+                className={styles.scheduleForm}
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+                  gap: 12,
+                  alignItems: "end",
+                }}
+              >
+                {/* Veckodag snabblista */}
+                <div style={{ gridColumn: "1 / -1" }}>
+                  <label className={styles.label} style={{ display: "block", marginBottom: 6 }}>
+                    Veckodag
+                  </label>
+                  <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                    {WEEKDAY_INDEXES.map((i) => (
+                      <button
+                        key={i}
+                        type="button"
+                        onClick={() => setWeekday(i)}
+                        className={styles.wsChip}
+                        style={{
+                          cursor: "pointer",
+                          border: i === weekday ? "1px solid #111" : "1px solid #ddd",
+                          background: i === weekday ? "#f7f7f7" : "#fff",
+                        }}
+                        aria-pressed={i === weekday}
+                      >
+                        {WEEKDAYS[i]}
+                      </button>
                     ))}
-                  </select>
-                </label>
+                  </div>
+                </div>
 
                 <label className={styles.labelInline}>
                   Start
@@ -580,17 +656,19 @@ export default function WorkshopUsersPage() {
                   />
                 </label>
 
-                <label className={styles.checkboxRow}>
-                  <input
-                    type="checkbox"
-                    checked={withLunch}
-                    onChange={(e) => setWithLunch(e.target.checked)}
-                  />
-                  <span>
-                    Inkludera lunchrast{" "}
-                    <small>(skapar två pass: före + efter lunchen)</small>
-                  </span>
-                </label>
+                <div style={{ gridColumn: "1 / -1" }}>
+                  <label className={styles.checkboxRow}>
+                    <input
+                      type="checkbox"
+                      checked={withLunch}
+                      onChange={(e) => setWithLunch(e.target.checked)}
+                    />
+                    <span>
+                      Inkludera lunchrast{" "}
+                      <InlineHelp>(skapar två pass: före + efter lunchen)</InlineHelp>
+                    </span>
+                  </label>
+                </div>
 
                 {withLunch && (
                   <>
@@ -636,40 +714,55 @@ export default function WorkshopUsersPage() {
                   />
                 </label>
 
-                <button className={styles.primaryBtn} onClick={addWorkingHour}>
-                  <FiPlus /> Lägg till
-                </button>
+                <div style={{ display: "flex", gap: 8, gridColumn: "1 / -1", justifyContent: "flex-end" }}>
+                  <button className={styles.primaryBtn} onClick={addWorkingHour}>
+                    <FiPlus /> Lägg till
+                  </button>
+                </div>
               </div>
 
-              {/* Lista tider */}
+              {/* Lista tider (grupperat per dag) */}
               {workingHours.length === 0 ? (
-                <div className={styles.placeholder}>Inga arbetstider ännu.</div>
+                <div className={styles.placeholder} style={{ marginTop: 12 }}>
+                  Inga arbetstider ännu.
+                </div>
               ) : (
-                <div className={styles.whList}>
-                  {workingHours.sort(sortWH).map((w) => (
-                    <div key={w.id} className={styles.whRow}>
-                      <div className={styles.whMain}>
-                        <strong>{WEEKDAYS[w.weekday]}</strong>
-                        <span>
-                          {w.start_time.slice(0, 5)}–{w.end_time.slice(0, 5)}
-                        </span>
-                        {(w.valid_from || w.valid_to) && (
-                          <span className={styles.muted}>
-                            {w.valid_from ? ` från ${w.valid_from}` : ""}
-                            {w.valid_to ? ` till ${w.valid_to}` : ""}
-                          </span>
-                        )}
+                <div className={styles.whList} style={{ marginTop: 12, display: "grid", gap: 10 }}>
+                  {WEEKDAY_INDEXES.map((dIdx) => {
+                    const items = workingHours.filter((w) => w.weekday === dIdx).sort(sortWH);
+                    if (items.length === 0) return null;
+                    return (
+                      <div key={dIdx} style={{ border: "1px solid #eee", borderRadius: 8, padding: 10 }}>
+                        <div style={{ fontWeight: 600, marginBottom: 8 }}>{WEEKDAYS[dIdx]}</div>
+                        <div style={{ display: "grid", gap: 8 }}>
+                          {items.map((w) => (
+                            <div key={w.id} className={styles.whRow} style={{ alignItems: "center" }}>
+                              <div className={styles.whMain}>
+                                <span>
+                                  {w.start_time.slice(0, 5)}–{w.end_time.slice(0, 5)}
+                                </span>
+                                {(w.valid_from || w.valid_to) && (
+                                  <span className={styles.muted} style={{ marginLeft: 8 }}>
+                                    {w.valid_from ? `från ${w.valid_from}` : ""}
+                                    {w.valid_to ? ` till ${w.valid_to}` : ""}
+                                  </span>
+                                )}
+                              </div>
+                              <div className={styles.rowActions}>
+                                <button
+                                  className={styles.dangerBtn}
+                                  onClick={() => removeWorkingHour(w.id)}
+                                  title="Ta bort"
+                                >
+                                  <FiTrash2 />
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
                       </div>
-                      <div className={styles.rowActions}>
-                        <button
-                          className={styles.dangerBtn}
-                          onClick={() => removeWorkingHour(w.id)}
-                        >
-                          <FiTrash2 />
-                        </button>
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </>
@@ -681,7 +774,15 @@ export default function WorkshopUsersPage() {
             {timeOffError && <div className={styles.error}>{timeOffError}</div>}
 
             {/* Ny frånvaro */}
-            <div className={styles.timeoffForm}>
+            <div
+              className={styles.timeoffForm}
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+                gap: 12,
+                alignItems: "end",
+              }}
+            >
               <label className={styles.labelInline}>
                 Start
                 <input
@@ -713,8 +814,8 @@ export default function WorkshopUsersPage() {
                   <option value="other">Övrigt</option>
                 </select>
               </label>
-              <label className={styles.labelInlineWide}>
-                Orsak (valfritt)
+              <label className={styles.labelInlineWide} style={{ gridColumn: "1 / -1" }}>
+                Orsak (valfritt) <InlineHelp>t.ex. VAB, kursnamn…</InlineHelp>
                 <input
                   type="text"
                   className={styles.input}
@@ -724,16 +825,20 @@ export default function WorkshopUsersPage() {
                 />
               </label>
 
-              <button className={styles.primaryBtn} onClick={addTimeOff}>
-                <FiSave /> Lägg till frånvaro
-              </button>
+              <div style={{ display: "flex", gap: 8, gridColumn: "1 / -1", justifyContent: "flex-end" }}>
+                <button className={styles.primaryBtn} onClick={addTimeOff}>
+                  <FiSave /> Lägg till frånvaro
+                </button>
+              </div>
             </div>
 
             {/* Lista frånvaro */}
             {timeOff.length === 0 ? (
-              <div className={styles.placeholder}>Ingen frånvaro registrerad.</div>
+              <div className={styles.placeholder} style={{ marginTop: 12 }}>
+                Ingen frånvaro registrerad.
+              </div>
             ) : (
-              <div className={styles.toList}>
+              <div className={styles.toList} style={{ marginTop: 12 }}>
                 {timeOff
                   .slice()
                   .sort(
@@ -741,13 +846,25 @@ export default function WorkshopUsersPage() {
                       new Date(b.start_at).getTime() - new Date(a.start_at).getTime()
                   )
                   .map((t) => (
-                    <div key={t.id} className={styles.toRow}>
+                    <div
+                      key={t.id}
+                      className={styles.toRow}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        border: "1px solid #eee",
+                        borderRadius: 8,
+                        padding: 10,
+                        marginBottom: 8,
+                      }}
+                    >
                       <div className={styles.toMain}>
                         <strong>
                           {new Date(t.start_at).toLocaleString()} –{" "}
                           {new Date(t.end_at).toLocaleString()}
                         </strong>
-                        <span className={styles.toType}>
+                        <span className={styles.toType} style={{ marginLeft: 8 }}>
                           {t.type === "vacation"
                             ? "Semester"
                             : t.type === "sick"
@@ -756,7 +873,11 @@ export default function WorkshopUsersPage() {
                             ? "Utbildning"
                             : "Övrigt"}
                         </span>
-                        {t.reason && <span className={styles.muted}>• {t.reason}</span>}
+                        {t.reason && (
+                          <span className={styles.muted} style={{ marginLeft: 6 }}>
+                            • {t.reason}
+                          </span>
+                        )}
                       </div>
                       <div className={styles.rowActions}>
                         <button

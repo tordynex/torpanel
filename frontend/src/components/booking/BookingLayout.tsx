@@ -94,7 +94,7 @@ export default function BookingLayout({
       <header className={styles.headerBar}>
         <div className={styles.brand}>
           <div className={styles.brandText}>
-            <div className={styles.logo}><img src="/autonexo_logo_black.png" alt="Autonexo Logga Vit PNG"/></div>
+            <div className={styles.logo}><img src="/autonexum_normal.png" alt="Autonexum Logga Vit PNG"/></div>
 
             <div className={styles.brandSub}>Boka verkstadstid</div>
           </div>

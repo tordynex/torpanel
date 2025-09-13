@@ -223,7 +223,7 @@ export default function RegistreringsnummerPage() {
             </p>
           </div>
           <div className={styles.heroBadge}>
-            <FiInfo aria-hidden /> Smidigt • Tryggt • Autonexo
+            <FiInfo aria-hidden /> Smidigt • Tryggt • Autonexum
           </div>
         </section>
 
