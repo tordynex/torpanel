@@ -847,3 +847,12 @@ class SmsMessage(Base):
 
     workshop = relationship("Workshop")
 
+class News(Base):
+    __tablename__ = "news"
+
+    id = Column(Integer, primary_key=True, index=True)
+
+    title = Column(String, nullable=False)
+    content = Column(Text, nullable=False)
+    # Ren datumstämpel (DATE). Vill du hellre ha tid, byt till DateTime(timezone=True).
+    date = Column(Date, nullable=False, server_default=func.current_date(), index=True)

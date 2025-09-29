@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routes import users, cars, customers, workshops, servicelogs, servicebay, baybooking, workshopserviceitem, booking, crm, twilio_webhooks, bookingrequests, upsell
+from app.routes import users, cars, customers, workshops, servicelogs, servicebay, baybooking, workshopserviceitem, booking, crm, twilio_webhooks, bookingrequests, upsell, news, improvement
 
 app = FastAPI(title="Autonexo API")
 
@@ -32,4 +32,6 @@ app.include_router(crm.router, prefix="/crm", tags=["Customer Relationship Manag
 app.include_router(twilio_webhooks.router, prefix="/webhooks", tags=["Twilio Webhooks"])
 app.include_router(bookingrequests.router, prefix="/bookingrequests", tags=["Bokningsförfrågningar"])
 app.include_router(upsell.router, prefix="/upsell", tags=["Upsell"])
+app.include_router(news.router, prefix="/news", tags=["News"])
+app.include_router(improvement.router, prefix="/improvement", tags=["Improvement"])
 

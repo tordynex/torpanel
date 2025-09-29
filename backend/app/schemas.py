@@ -774,6 +774,24 @@ class UpsellSendRequest(BaseModel):
     idempotency_key: Optional[str] = None
 
 
+class NewsBase(BaseModel):
+    title: str
+    content: str
+    date: date
+
+class NewsCreate(NewsBase):
+    pass
+
+class NewsUpdate(BaseModel):
+    title: Optional[str] = None
+    content: Optional[str] = None
+    date: Optional[date] = None
+
+class NewsOut(NewsBase):
+    id: int
+
+    model_config = ConfigDict(from_attributes=True)
+
 # Pydantic v2: rebuild for forward refs
 BayBookingRead.model_rebuild()
 ServiceTaskRead.model_rebuild()

@@ -1,0 +1,170 @@
+/* === MakeNews.module.css ================================================ */
+
+/* Container card */
+.card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 6px 18px rgba(17, 24, 39, 0.06);
+  display: grid;
+  gap: 14px;
+}
+
+/* Header */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 10px;
+}
+.title {
+  font-weight: 800;
+  font-size: 1.05rem;
+  color: #1f2937;
+  margin: 0;
+}
+.actions {
+  display: inline-flex;
+  gap: 8px;
+}
+
+/* Buttons */
+.btn {
+  border-radius: 10px;
+  padding: 10px 12px;
+  cursor: pointer;
+  font-weight: 600;
+  border: 1px solid transparent;
+  background: transparent;
+  transition: transform .04s ease, box-shadow .2s, background-color .2s, color .2s, border-color .2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btnPrimary {
+  background: #ef5027;
+  color: #ffffff;
+  border-color: #ef5027;
+}
+.btnPrimary:hover {
+  filter: brightness(1.03);
+  box-shadow: 0 8px 24px rgba(239, 80, 39, 0.25);
+  transform: translateY(-1px);
+}
+
+.btnSecondary {
+  background: #f9fafb;
+  color: #1f2937;
+  border-color: #e5e7eb;
+}
+.btnSecondary:hover {
+  background: #fff;
+  border-color: #ef5027;
+  color: #ef5027;
+}
+
+.btnGhost {
+  background: #ffffff;
+  color: #1f2937;
+  border-color: #e5e7eb;
+}
+.btnGhost:hover {
+  background: #f9fafb;
+  border-color: #ef5027;
+  color: #ef5027;
+}
+
+.btn:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* Alerts */
+.alertError {
+  background: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+  border-radius: 12px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+.alertSuccess {
+  background: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+  border-radius: 12px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+
+/* Form layout */
+.form {
+  display: grid;
+  gap: 14px;
+}
+
+.field {
+  display: grid;
+  gap: 8px;
+}
+
+.label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.input {
+  width: 100%;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  border-radius: 12px;
+  padding: 10px 12px;
+  color: #111827;
+  outline: none;
+  transition: border-color .15s ease, box-shadow .15s ease;
+  font-size: 0.95rem;
+}
+.input:focus {
+  border-color: #ef5027;
+  box-shadow: 0 0 0 4px rgba(239, 80, 39, 0.12);
+}
+
+.textarea {
+  min-height: 140px;
+  resize: vertical;
+  line-height: 1.45;
+  border-radius: 12px;
+}
+
+.helpText {
+  color: #6b7280;
+  font-size: 0.85rem;
+}
+
+/* Footer */
+.footerRow {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+
+/* Responsive tweaks */
+@media (max-width: 520px) {
+  .header { flex-direction: column; align-items: flex-start; gap: 8px; }
+}

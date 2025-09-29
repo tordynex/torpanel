@@ -8,12 +8,18 @@ import { BsWrenchAdjustableCircle } from "react-icons/bs";
 import { GiMechanicGarage } from "react-icons/gi";
 import { GrCatalogOption } from "react-icons/gr";
 import userService from "@/services/userService";
+import ImprovementModal from "@/components/workshop/ImprovementModal.tsx";
 
 export default function WorkshopLayout() {
   const location = useLocation();
   const auth = useAuth(); // null = ingen/fel/expired token
   const workshop = useWorkshop();
   const navigate = useNavigate();
+  const [improveOpen, setImproveOpen] = useState(false)
+    const openImprovement = () => {
+    setImproveOpen(true)
+    setMobileNavOpen(false) // stäng sidomenyn på mobil
+  }
 
   // Skydda alla /workshop/*
   if (!auth || !["workshop_user", "workshop_employee"].includes(auth.role)) {
@@ -139,6 +145,16 @@ export default function WorkshopLayout() {
             </div>
           )}
         </nav>
+        <div className={styles.sidebarFooter}>
+          <button
+            type="button"
+            className={styles.feedbackLink}
+            onClick={openImprovement}
+            title="Föreslå ny funktion"
+          >
+            Föreslå ny funktion
+          </button>
+        </div>
       </aside>
 
       {/* Overlay för mobil */}
@@ -177,6 +193,13 @@ export default function WorkshopLayout() {
             </button>
           </div>
         </header>
+
+        <ImprovementModal
+          isOpen={improveOpen}
+          onClose={() => setImproveOpen(false)}
+          page={typeof window !== "undefined" ? window.location.pathname : ""}
+          appVersion={import.meta.env.VITE_APP_VERSION}
+        />
 
         <main className={styles.content}>
           <Outlet />

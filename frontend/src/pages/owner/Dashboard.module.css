@@ -52,3 +52,10 @@ h2 {
   margin: 0 auto;
   width: 300px;
 }
+
+.newsbox {
+  display: block;
+  margin: 0 auto;
+  width: 500px;
+  padding-top: 50px;
+}

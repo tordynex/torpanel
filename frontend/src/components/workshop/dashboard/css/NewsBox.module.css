@@ -1,0 +1,170 @@
+/* === NewsBox.module.css ================================================== */
+/* Kortcontainer */
+.brCard {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 6px 18px rgba(17, 24, 39, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Header */
+.brHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 10px;
+}
+
+.brTitle {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 800;
+  font-size: 1.05rem;
+  color: #1f2937;
+}
+
+.brActions {
+  display: inline-flex;
+  gap: 8px;
+}
+
+/* Buttons (samma tema som dashboard) */
+.brBtn {
+  border-radius: 10px;
+  padding: 10px 12px;
+  cursor: pointer;
+  font-weight: 600;
+  border: 1px solid transparent;
+  background: transparent;
+  transition: transform .04s ease, box-shadow .2s, background-color .2s, color .2s, border-color .2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.brBtnGhost {
+  background: #ffffff;
+  color: #1f2937;
+  border-color: #e5e7eb;
+}
+.brBtnGhost:hover {
+  background: #f9fafb;
+  border-color: #ef5027;
+  color: #ef5027;
+}
+
+.brBtn:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* Alert / error */
+.brAlert {
+  background: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+  border-radius: 12px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+
+/* List */
+.brList {
+  display: grid;
+  gap: 10px;
+}
+
+/* Skeletons */
+.brSkeletonList { display: grid; gap: 8px; }
+.brSkeleton {
+  height: 64px;
+  border-radius: 12px;
+  background: linear-gradient(90deg, #f3f4f6, #e5e7eb, #f3f4f6);
+  background-size: 200% 100%;
+  animation: brShimmer 1.3s infinite;
+}
+@keyframes brShimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Empty state */
+.brEmpty {
+  border: 1px dashed #e5e7eb;
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+  color: #6b7280;
+  background: #fafafa;
+}
+
+/* Item */
+.brItem {
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 6px 18px rgba(17, 24, 39, 0.06);
+  overflow: hidden;
+}
+
+/* Item header: titel + datum */
+.brItemHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.brId {
+  font-weight: 800;
+  color: #111827;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding-right: 8px;
+}
+
+.brTime {
+  color: #6b7280;
+  font-size: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Item body: innehåll */
+.brItemBody {
+  padding: 12px;
+}
+
+.brMsgText {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 10px;
+  color: #1f2937;
+  white-space: pre-wrap;
+  word-break: break-word;
+  line-height: 1.45;
+}
+
+/* Responsivt */
+@media (max-width: 480px) {
+  .brHeader { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .brItemHeader { flex-direction: column; align-items: flex-start; gap: 6px; }
+  .brTime { font-size: 0.85rem; }
+}

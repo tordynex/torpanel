@@ -2,6 +2,9 @@ import { useEffect, useState } from "react"
 import workshopService from "@/services/workshopService"
 import carService from "@/services/carService"
 import styles from "./Dashboard.module.css"
+import MakeNews from "@/components/owner/dashboard/MakeNews.tsx";
+import NewsBox from "@/components/workshop/dashboard/NewsBox.tsx";
+
 
 export default function Dashboard() {
   const [workshopCount, setWorkshopCount] = useState<number | null>(null)
@@ -47,6 +50,14 @@ export default function Dashboard() {
           </div>
         </div>
       )}
+      <div className={styles.statsGrid}>
+        <div className={styles.newsbox}>
+          <MakeNews/>
+        </div>
+        <div className={styles.newsbox}>
+          <NewsBox/>
+        </div>
+      </div>
     </div>
    </div>
   )

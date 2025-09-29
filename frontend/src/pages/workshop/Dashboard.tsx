@@ -8,6 +8,7 @@ import Modal from "@/components/common/Modal"
 import SimpleBookingForm from "@/components/booking/SimpleBookingForm";
 import BookingRequests from "@/components/workshop/dashboard/BookingRequests.tsx";
 import LatestBookings from "@/components/workshop/dashboard/LatestBookings.tsx";
+import NewsBox from "@/components/workshop/dashboard/NewsBox.tsx";
 
 function getGreeting(): string {
   const h = new Date().getHours();
@@ -100,6 +101,16 @@ export default function Dashboard() {
           </div>
           <div className={styles.card}>
             < LatestBookings limit={5}/>
+          </div>
+      </section>
+
+
+        <section className={styles.grid}>
+          <div className={styles.card}>
+            <NewsBox />
+          </div>
+          <div className={styles.card}>
+
           </div>
       </section>
 

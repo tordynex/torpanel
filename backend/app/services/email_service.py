@@ -9,7 +9,7 @@ BASE_EMAIL_TEMPLATE = """
 <html>
   <body style="font-family: sans-serif; background-color: #f8f8f8; padding: 20px;">
     <div style="max-width: 600px; margin: auto; background-color: #ffffff; padding: 30px; border-radius: 8px;">
-      <img src="https://www.portal.autonexo.se/autonexo_logo_black.png" alt="Autonexo" style="width: 180px; margin-bottom: 30px;" />
+      <img src="https://www.portal.autonexexum.se/autonexum_normal.png" alt="Autonexum" style="width: 180px; margin-bottom: 30px;" />
       <h2>{{ heading }}</h2>
       <p>{{ message }}</p>
       {% if button_link and button_text %}
@@ -32,9 +32,10 @@ async def send_email(
     message: str,
     button_link: str = None,
     button_text: str = None,
+    reply_to: str = None,   # <— NYTT
 ):
     # Text fallback för e-postklienter utan HTML
-    text_body = f"{heading}\n\n{message}\n\n{button_text or ''}: {button_link or ''}"
+    text_body = f"{heading}\n\n{message}\n\n{(button_text or '')}: {(button_link or '')}"
 
     # Rendera HTML
     html_template = Template(BASE_EMAIL_TEMPLATE)
@@ -49,6 +50,9 @@ async def send_email(
     msg["From"] = os.getenv("SMTP_FROM")
     msg["To"] = to_email
     msg["Subject"] = subject
+    if reply_to:  # <— NYTT
+        msg["Reply-To"] = reply_to
+
     msg.set_content(text_body)
     msg.add_alternative(html_body, subtype="html")
 
@@ -60,6 +64,7 @@ async def send_email(
         password=os.getenv("SMTP_PASS"),
         start_tls=True
     )
+
 
 # Specialfunktioner med innehåll
 async def send_password_reset_email(to_email: str, name: str, reset_link: str):
@@ -79,9 +84,47 @@ async def send_password_reset_email(to_email: str, name: str, reset_link: str):
 async def send_welcome_email(to_email: str, name: str):
     await send_email(
         to_email=to_email,
-        subject="Välkommen till Autonexo!",
+        subject="Välkommen till Autonexum!",
         heading=f"Välkommen {name}!",
-        message="Ditt konto har skapats och du är nu redo att logga in och börja använda Autonexo.",
-        button_link="https://www.portal.autonexo.se",
+        message="Ditt konto har skapats och du är nu redo att logga in och börja använda Autonexum.",
+        button_link="https://www.portal.autonexum.se",
         button_text="Logga in"
+    )
+
+async def send_improvement_suggestion_email(
+    sender_email: str | None,
+    sender_name: str | None,
+    suggestion_message: str,
+    page: str | None = None,
+    app_version: str | None = None,
+):
+    """
+    Skickar ett förbättringsförslag till utvecklar-inboxen.
+    Reply-To sätts till avsändarens e-post (om angiven) så det är lätt att svara.
+    """
+    to_addr = os.getenv("IMPROVEMENTS_INBOX", "dev@autonexum.se")
+    subject = "Autonexum – Föreslagen förändring"
+
+    lines = []
+    if sender_name:
+        lines.append(f"Namn: {sender_name}")
+    if sender_email:
+        lines.append(f"E-post: {sender_email}")
+    if page:
+        lines.append(f"Sida/kontext: {page}")
+    if app_version:
+        lines.append(f"App-version: {app_version}")
+
+    # Bygg huvudinnehållet
+    details = "\n".join(lines)
+    body = (details + "\n\n" if details else "") + suggestion_message.strip()
+
+    await send_email(
+        to_email=to_addr,
+        subject=subject,
+        heading="Nytt förbättringsförslag",
+        message=body,
+        button_link=None,
+        button_text=None,
+        reply_to=sender_email or None,  # så dev kan svara direkt
     )

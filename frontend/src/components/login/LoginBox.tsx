@@ -53,7 +53,7 @@ export default function LoginBox({
   return (
     <div className={styles.wrapper}>
       <h2 className={styles.header}>
-        <img src="/autonexo_logo_black.png" alt="Autonexo logo" className={styles.toplogo} />
+        <img src="/autonexum_normal.png" alt="Autonexo logo" className={styles.toplogo} />
       </h2>
 
       {mode === "login" ? (
