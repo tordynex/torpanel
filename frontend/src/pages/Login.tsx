@@ -1,25 +1,18 @@
-import { useEffect, useRef } from "react"
-import { useNavigate } from "react-router-dom"
+// src/pages/Login.tsx
+import { useEffect, useRef, useState } from "react"
+import { useLocation, useNavigate } from "react-router-dom"
 import LoginBox from "@/components/login/LoginBox"
 import userService from "@/services/userService"
 
+type AuthState = "idle" | "checking" | "guest" | "authed"
+
 export default function LoginPage() {
   const navigate = useNavigate()
-  const ranRef = useRef(false)
+  const location = useLocation()
 
-  const goByRole = (user: any) => {
-    localStorage.setItem("currentUser", JSON.stringify(user))
-    const workshop = user.workshops?.[0]
-    if (workshop) localStorage.setItem("currentWorkshop", JSON.stringify(workshop))
-
-    if (user.role === "owner") {
-      navigate("/owner/", { replace: true })
-    } else if (["workshop_user", "workshop_employee"].includes(user.role || "")) {
-      navigate("/workshop", { replace: true })
-    } else {
-      // okänd roll – stanna på login utan loop
-    }
-  }
+  const ranRef = useRef(false)           // se till att verify körs exakt en gång
+  const navLockRef = useRef(false)       // förhindra ping-pong med dubbelnavigering
+  const [authState, setAuthState] = useState<AuthState>("idle")
 
   const clearAuth = () => {
     localStorage.removeItem("token")
@@ -27,39 +20,71 @@ export default function LoginPage() {
     localStorage.removeItem("currentWorkshop")
   }
 
+  const targetByRole = (user: any) => {
+    const role = user?.role || ""
+    if (role === "owner") return "/owner/"
+    if (["workshop_user", "workshop_employee"].includes(role)) return "/workshop"
+    return null
+  }
+
+  const goByRole = (user: any) => {
+    // skriv till storage en gång
+    localStorage.setItem("currentUser", JSON.stringify(user))
+    const workshop = user?.workshops?.[0]
+    if (workshop) localStorage.setItem("currentWorkshop", JSON.stringify(workshop))
+
+    const target = targetByRole(user)
+    if (!target) return // okänd roll -> stanna på login
+
+    // undvik ping-pong: navigera bara om vi inte redan är där
+    if (location.pathname !== target && !navLockRef.current) {
+      navLockRef.current = true
+      navigate(target, { replace: true })
+    }
+  }
+
+  // Verifiera sessionen EN gång vid mount, men navigera bara om giltig.
   useEffect(() => {
     if (ranRef.current) return
     ranRef.current = true
 
-    // 🔑 Ny princip: oavsett om vi har token eller cookie – verifiera med servern.
-    // INGEN redirect baserat på att JWT har giltig exp lokalt.
-    const verify = async () => {
+    ;(async () => {
+      setAuthState("checking")
       try {
-        const user = await userService.fetchCurrentUser() // verifierar token/cookie mot backend
+        const user = await userService.fetchCurrentUser()
+        setAuthState("authed")
         goByRole(user)
       } catch {
-        // inte inloggad – stanna på login och se till att lokal auth är bortstädad
         clearAuth()
+        setAuthState("guest")
+        // Viktigt: INGEN navigate till /login här – vi ÄR redan på login.
       }
-    }
-
-    verify()
-  }, [navigate])
+    })()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   return (
     <LoginBox
+      // Efter lyckad inloggning: spara token, verifiera DIREKT mot servern,
+      // navigera EN gång, låt route guards vara passiva.
       onSuccess={async (token) => {
-        // Om vi får en token – spara den och verifiera DIREKT mot servern
         if (token) localStorage.setItem("token", token)
 
         try {
           const user = await userService.fetchCurrentUser()
+          setAuthState("authed")
           goByRole(user)
         } catch {
-          // misslyckad verifiering → rensa och stanna
           clearAuth()
+          setAuthState("guest")
+        } finally {
+          // släpp ev. navigeringslås så framtida logins kan navigera igen
+          // (för säkerhets skull, liten delay så replace hinner bli klar)
+          setTimeout(() => (navLockRef.current = false), 50)
         }
       }}
+      // (valfritt) skicka in laddningsstatus ifall LoginBox vill visa spinner
+      loading={authState === "checking"}
     />
   )
 }
